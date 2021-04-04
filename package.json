@@ -1,0 +1,17 @@
+{
+  "name": "unibrics.core",
+  "displayName": "Unibrics Core",
+  "version": "0.0.1-preview",
+  "unity": "2021.1",
+  "description": "Package Sample.",
+  "dependencies": {
+  },
+  "keywords": [
+    "unibrics"
+  ],
+  "license": "MIT",
+  "author": {
+    "name": "Artem Korotenko",
+    "email": "korotenkofm@gmail.com"
+  }
+}
