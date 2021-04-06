@@ -5,6 +5,7 @@
     using DI;
     using Tools;
     using UnityEngine;
+    using Types = Tools.Types;
 
     public class Startup
     {
@@ -23,18 +24,19 @@
 
         private void PrepareModules()
         {
-            var installers = AssemblyExtensions.GetTypesWithAttribute<InstallAttribute, IModuleInstaller>()
+            var installers = Types.AnnotatedWith<InstallAttribute>().WithParent(typeof(IModuleInstaller)).TypesOnly()
                 .Select(type => (IModuleInstaller) Activator.CreateInstance(type))
                 .OrderByDescending(installer => installer.Priority)
                 .ToList();
-            
+
             installers.ForEach(installer => installer.Install(diService));
             diService.PrepareServices();
         }
-        
+
         private void Launch()
         {
-            var launcherType = AssemblyExtensions.GetSingleTypeWithAttribute<InstallAttribute, AppLauncher>();
+            var launcherType = Types.AnnotatedWith<InstallAttribute>().WithParent(typeof(AppLauncher)).EnsuredSingle()
+                .Type();
             if (launcherType == null)
             {
                 return;
