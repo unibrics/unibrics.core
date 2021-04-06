@@ -4,6 +4,7 @@
     using System.Linq;
     using DI;
     using Tools;
+    using UnityEngine;
 
     public class Startup
     {
@@ -17,6 +18,7 @@
         public void StartApp()
         {
             PrepareModules();
+            Launch();
         }
 
         private void PrepareModules()
@@ -28,6 +30,18 @@
             
             installers.ForEach(installer => installer.Install(diService));
             diService.PrepareServices();
+        }
+        
+        private void Launch()
+        {
+            var launcherType = AssemblyExtensions.GetSingleTypeWithAttribute<InstallAttribute, AppLauncher>();
+            if (launcherType == null)
+            {
+                return;
+            }
+
+            var launcher = diService.InstanceProvider.GetInstance<IAppLauncher>(launcherType);
+            launcher.Launch();
         }
     }
 }

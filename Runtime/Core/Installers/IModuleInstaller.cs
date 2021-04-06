@@ -10,7 +10,7 @@
 
     public abstract class ModuleInstaller : IModuleInstaller
     {
-        public abstract Priority Priority { get; }
+        public virtual Priority Priority => Priority.Simple;
         
         public abstract void Install(IServicesRegistry services);
     }

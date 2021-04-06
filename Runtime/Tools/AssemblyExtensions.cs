@@ -37,5 +37,18 @@
         {
             return GetTypesWithAttribute<TAttribute>().Where(type => typeof(TParentType).IsAssignableFrom(type));
         }
+
+        public static Type GetSingleTypeWithAttribute<TAttribute, TParentType>() where TAttribute : Attribute
+        {
+            var types = GetTypesWithAttribute<TAttribute>().Where(type => typeof(TParentType).IsAssignableFrom(type))
+                .ToList();
+            if (types.Count > 1)
+            {
+                throw new Exception($"Expected single type of {typeof(TParentType)} with attribute {typeof(TAttribute)}" +
+                                    $" in application, but {string.Join(",", types)} found. ");
+            }
+
+            return types.FirstOrDefault();
+        }
     }
 }

@@ -14,5 +14,10 @@
         {
             registry.Add(new ServiceDescriptor(typeof(TInterface), ServiceScope.Singleton, typeof(TImplementation)));
         }
+        
+        public static void AddSingleton<TImplementation>(this IServicesRegistry registry, params Type[] interfaces)
+        {
+            registry.Add(new ServiceDescriptor(interfaces, ServiceScope.Singleton, typeof(TImplementation)));
+        }
     }
 }
