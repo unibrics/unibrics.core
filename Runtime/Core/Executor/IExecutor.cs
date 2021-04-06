@@ -1,8 +1,7 @@
 namespace Unibrics.Core.Execution
 {
     using DI;
-    using Zenject;
-
+    
     public interface IExecutor
     {
         IExecutionSequence Execute<T>() where T : IExecutableCommand;
