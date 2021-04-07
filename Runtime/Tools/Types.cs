@@ -55,5 +55,11 @@
         {
             return typesAndAttributes.Select(tuple => tuple.type);
         }
+        
+        public static IEnumerable<T> CreateInstances<T>(
+            this IEnumerable<Type> types)
+        {
+            return types.Select(type => (T)Activator.CreateInstance(type));
+        }
     }
 }

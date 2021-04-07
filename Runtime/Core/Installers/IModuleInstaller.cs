@@ -1,17 +1,16 @@
 ﻿namespace Unibrics.Core
 {
+    using System;
+    using Launchers;
     using Services;
 
     interface IModuleInstaller
     {
         Priority Priority { get; }
+
+        Type LauncherType { get; }
+
         void Install(IServicesRegistry services);
     }
 
-    public abstract class ModuleInstaller : IModuleInstaller
-    {
-        public virtual Priority Priority => Priority.Simple;
-        
-        public abstract void Install(IServicesRegistry services);
-    }
 }
