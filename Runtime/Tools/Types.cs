@@ -28,7 +28,11 @@
             this IEnumerable<(TAttribute attribute, Type type)> typesAndAttributes, Type type) where TAttribute : Attribute
         {
             return typesAndAttributes.Where(tuple => type.IsAssignableFrom(tuple.type));
-            ;
+        }
+        
+        public static IEnumerable<Type> WithParent<TParent>()
+        {
+            return CachedTypes().Where(type => typeof(TParent).IsAssignableFrom(type));
         }
         
         public static (TAttribute attribute, Type type) EnsuredSingle<TAttribute>(
