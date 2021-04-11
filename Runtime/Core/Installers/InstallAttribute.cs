@@ -8,4 +8,15 @@
     {
         
     }
+    
+    [AttributeUsage(AttributeTargets.Class), MeansImplicitUse]
+    public class InstallWithIdAttribute : Attribute
+    {
+        public string Id { get; }
+
+        public InstallWithIdAttribute(string id)
+        {
+            Id = id;
+        }
+    }
 }

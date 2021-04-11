@@ -4,9 +4,9 @@
     using Services;
 
     [Install]
-    public class UnibricsCoreInstaller : ModuleInstaller
+    class UnibricsCoreInstaller : ModuleInstaller
     {
-        public override Priority Priority => Priority.High;
+        public override Priority Priority => Priority.Highest;
         
         public override void Install(IServicesRegistry services)
         {

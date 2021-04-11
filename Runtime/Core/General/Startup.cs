@@ -1,19 +1,20 @@
 ﻿namespace Unibrics.Core
 {
-    using System;
     using System.Collections.Generic;
     using System.Linq;
+    using Config;
     using DI;
     using Launchers;
+    using Services;
     using Tools;
-    using UnityEngine;
-    using Types = Tools.Types;
 
     public class Startup
     {
         private readonly IDependencyInjectionService diService;
 
         private List<IModuleInstaller> installers;
+
+        private IAppSettings settings;
 
         public Startup(IDependencyInjectionService diService)
         {
@@ -22,11 +23,17 @@
 
         public void StartSequence()
         {
+            LoadAppConfig();
             PrepareModules();
             LaunchModules();
             LaunchApp();
         }
 
+        private void LoadAppConfig()
+        {
+            settings = new AppSettingsFactory().LoadAppSettings();
+            diService.AddSingleton<IAppSettings>(settings);
+        }
 
         private void PrepareModules()
         {
@@ -37,7 +44,11 @@
                 .OrderByDescending(installer => installer.Priority)
                 .ToList();
 
-            installers.ForEach(installer => installer.Install(diService));
+            installers.ForEach(installer =>
+            {
+                installer.Prepare(settings);
+                installer.Install(diService);
+            });
             diService.PrepareServices();
         }
 

@@ -16,8 +16,7 @@
             registry.Add(new ServiceDescriptor(typeof(TInterface), ServiceScope.Singleton, typeof(TImplementation)));
         }
         
-        public static void AddSingleton<TInterface, TImplementation>(this IServicesRegistry registry, TImplementation value)
-            where TImplementation : TInterface
+        public static void AddSingleton<TInterface>(this IServicesRegistry registry, object value)
         {
             registry.Add(new ServiceDescriptor(typeof(TInterface), ServiceScope.Singleton, implementationObject:value));
         }
