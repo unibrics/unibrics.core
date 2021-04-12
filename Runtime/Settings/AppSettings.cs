@@ -5,14 +5,14 @@ namespace Unibrics.Core.Config
 
     class AppSettings : IAppSettings
     {
-        private readonly IList<IAppSettingsComponent> components;
+        private readonly IList<IAppSettingsSection> components;
 
-        public AppSettings(IList<IAppSettingsComponent> components)
+        public AppSettings(IList<IAppSettingsSection> components)
         {
             this.components = components;
         }
 
-        public T Get<T>() where T : IAppSettingsComponent
+        public T Get<T>() where T : IAppSettingsSection
         {
             return components.OfType<T>().FirstOrDefault();
         }

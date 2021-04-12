@@ -19,14 +19,14 @@ namespace Unibrics.Core.Config
         public IAppSettings LoadAppSettings()
         {
             var raw = Resources.Load<TextAsset>("unibrics")?.text;
-            var configTypes = Types.AnnotatedWith<InstallWithIdAttribute>().WithParent(typeof(IAppSettingsComponent))
+            var configTypes = Types.AnnotatedWith<InstallWithIdAttribute>().WithParent(typeof(IAppSettingsSection))
                 .ToDictionary(tuple => tuple.attribute.Id, tuple => tuple.type);
             return new AppSettings(GetComponents(raw, configTypes));
         }
 
-        private List<IAppSettingsComponent> GetComponents(string raw, IDictionary<string, Type> settingsTypes)
+        private List<IAppSettingsSection> GetComponents(string raw, IDictionary<string, Type> settingsTypes)
         {
-            var components = new List<IAppSettingsComponent>();
+            var components = new List<IAppSettingsSection>();
             if (raw == null)
             {
                 return components;
@@ -40,7 +40,7 @@ namespace Unibrics.Core.Config
                     continue;
                 }
                 
-                components.Add((IAppSettingsComponent) entry.Value.ToObject(type));
+                components.Add((IAppSettingsSection) entry.Value.ToObject(type));
             }
 
             return components;

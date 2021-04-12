@@ -52,7 +52,6 @@
             diService.PrepareServices();
         }
 
-
         private void LaunchModules()
         {
             installers

@@ -2,10 +2,10 @@ namespace Unibrics.Core.Config
 {
     public interface IAppSettings
     {
-        T Get<T>() where T : IAppSettingsComponent;
+        T Get<T>() where T : IAppSettingsSection;
     }
 
-    public interface IAppSettingsComponent
+    public interface IAppSettingsSection
     {
         
     }
