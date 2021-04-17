@@ -1,0 +1,23 @@
+{
+    "name": "Unibrics.Core.Tests",
+    "rootNamespace": "",
+    "references": [
+        "GUID:b3625dafe267886428923df2a463e029"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "Castle.Core.dll",
+        "nunit.framework.dll",
+        "System.Threading.Tasks.Extensions.dll",
+        "NSubstitute.dll"
+    ],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
