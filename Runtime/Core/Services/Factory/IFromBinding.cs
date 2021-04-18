@@ -1,23 +1,34 @@
 namespace Unibrics.Core.Services
 {
+    using System;
+
     public interface IFromBinding
     {
-        IToBinding To<TTo>();
+        IToTypeBinding ImplementedBy<TTo>();
+        
+        IToTypeBinding ImplementedBy(Type type);
 
-        IToBinding To<TTo>(TTo toObject);
+        IToInstanceBinding ImplementedByInstance<TTo>(TTo toObject);
     }
 
     public interface IFromBinding<TFrom>
     {
-        IToBinding To<TTo>() where TTo : TFrom;
+        IToTypeBinding ImplementedBy<TTo>() where TTo : TFrom;
+        
+        IToTypeBinding ImplementedBy(Type type);
 
-        IToBinding To<TTo>(TTo toObject) where TTo : TFrom;
+        IToInstanceBinding ImplementedByInstance<TTo>(TTo toObject) where TTo : TFrom;
     }
 
-    public interface IToBinding
+    public interface IToTypeBinding
     {
         void AsSingleton();
 
         void AsTransient();
+    }
+
+    public interface IToInstanceBinding
+    {
+        
     }
 }

@@ -32,7 +32,7 @@
         private void LoadAppConfig()
         {
             settings = new AppSettingsFactory().LoadAppSettings();
-            diService.AddSingleton<IAppSettings>(settings);
+            diService.Add<IAppSettings>().ImplementedByInstance(settings);
         }
 
         private void PrepareModules()

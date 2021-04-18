@@ -20,24 +20,6 @@
             InterfaceTypes = interfaceTypes;
         }
 
-        public ServiceDescriptor([NotNull] Type[] interfaceTypes, ServiceScope scope,
-            [CanBeNull] Type implementationType = null, [CanBeNull] object implementationObject = null)
-        {
-            InterfaceTypes = interfaceTypes;
-            Scope = scope;
-            ImplementationType = implementationType;
-            ImplementationObject = implementationObject;
-        }
-
-        public ServiceDescriptor(Type interfaceType, ServiceScope scope, [CanBeNull] Type implementationType = null,
-            [CanBeNull] object implementationObject = null)
-        {
-            InterfaceTypes = new[] {interfaceType};
-            Scope = scope;
-            ImplementationType = implementationType;
-            ImplementationObject = implementationObject;
-        }
-
         public void Validate()
         {
             if (ImplementationObject == null && ImplementationType == null)
@@ -46,9 +28,9 @@
                                                             $" or object for {BindingName()}");
             }
 
-            if (Scope == ServiceScope.Unset)
+            if (Scope == ServiceScope.Unset && ImplementationType != null)
             {
-                throw new ServiceValidationException($"Scope was not set for {BindingName()}");
+                throw new ServiceValidationException($"Scope was not set for type binding {BindingName()}");
             }
 
             string BindingName() => $"[{string.Join(",", InterfaceTypes.Select(type => type.Name))}]";

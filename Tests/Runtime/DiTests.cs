@@ -21,7 +21,7 @@ namespace Unibrics.Core.Tests
         [Test]
         public void _01ShouldBindSingleTypeToType()
         {
-            services.Bind<IFirstInterface>().To<FirstImplementation>().AsSingleton();
+            services.Add<IFirstInterface>().ImplementedBy<FirstImplementation>().AsSingleton();
 
             Assert.That(FirstDescriptor.InterfaceTypes.Contains(typeof(IFirstInterface)));
             Assert.That(FirstDescriptor.ImplementationType, Is.EqualTo(typeof(FirstImplementation)));
@@ -33,8 +33,8 @@ namespace Unibrics.Core.Tests
         public void _02ShouldBindMultipleTypesToType()
         {
             services
-                .Bind(typeof(IFirstInterface), typeof(ISecondInterface))
-                .To<FirstImplementation>().AsSingleton();
+                .Add(typeof(IFirstInterface), typeof(ISecondInterface))
+                .ImplementedBy<FirstImplementation>().AsSingleton();
 
             Assert.That(FirstDescriptor.InterfaceTypes.Contains(typeof(IFirstInterface)));
             Assert.That(FirstDescriptor.InterfaceTypes.Contains(typeof(ISecondInterface)));
@@ -47,7 +47,7 @@ namespace Unibrics.Core.Tests
         {
             var instance = new FirstImplementation();
 
-            services.Bind<IFirstInterface>().To(instance);
+            services.Add<IFirstInterface>().ImplementedByInstance(instance);
             
             Assert.That(FirstDescriptor.ImplementationObject, Is.SameAs(instance));
         }
@@ -55,7 +55,7 @@ namespace Unibrics.Core.Tests
         [Test]
         public void _04ShouldBindToTransientLifetime()
         {
-            services.Bind<IFirstInterface>().To<FirstImplementation>().AsTransient();
+            services.Add<IFirstInterface>().ImplementedBy<FirstImplementation>().AsTransient();
             
             Assert.That(FirstDescriptor.Scope, Is.EqualTo(ServiceScope.Transient));
         }
@@ -63,13 +63,23 @@ namespace Unibrics.Core.Tests
         [Test]
         public void _05ShouldBeValidOnlyAfterLifetimeSet()
         {
-            var from = services.Bind<IFirstInterface>();
+            var from = services.Add<IFirstInterface>();
             Assert.Throws<ServiceValidationException>(FirstDescriptor.Validate);
 
-            var to = from.To<FirstImplementation>();
+            var to = from.ImplementedBy<FirstImplementation>();
             Assert.Throws<ServiceValidationException>(FirstDescriptor.Validate);
             
             to.AsSingleton();
+            Assert.DoesNotThrow(FirstDescriptor.Validate);
+        }
+        
+        [Test]
+        public void _06ShouldBeValidAfterFromInstanceSet()
+        {
+            var from = services.Add<IFirstInterface>();
+            Assert.Throws<ServiceValidationException>(FirstDescriptor.Validate);
+
+            from.ImplementedByInstance(new FirstImplementation());
             Assert.DoesNotThrow(FirstDescriptor.Validate);
         }
     }

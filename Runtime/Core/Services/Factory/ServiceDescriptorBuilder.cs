@@ -2,7 +2,7 @@ namespace Unibrics.Core.Services
 {
     using System;
 
-    public class ServiceDescriptorBuilder : IFromBinding, IToBinding
+    public class ServiceDescriptorBuilder : IFromBinding, IToTypeBinding, IToInstanceBinding
     {
         public ServiceDescriptor Descriptor { get; }
 
@@ -21,13 +21,19 @@ namespace Unibrics.Core.Services
             Descriptor.Scope = ServiceScope.Transient;
         }
 
-        public IToBinding To<TTo>()
+        public IToTypeBinding ImplementedBy<TTo>()
         {
             Descriptor.ImplementationType = typeof(TTo);
             return this;
         }
 
-        public IToBinding To<TTo>(TTo toObject)
+        public IToTypeBinding ImplementedBy(Type type)
+        {
+            Descriptor.ImplementationType = type;
+            return this;
+        }
+
+        public IToInstanceBinding ImplementedByInstance<TTo>(TTo toObject)
         {
             Descriptor.ImplementationObject = toObject;
             return this;
@@ -36,19 +42,25 @@ namespace Unibrics.Core.Services
 
     public class TypedServiceDescriptorBuilder<T> : ServiceDescriptorBuilder, IFromBinding<T>
     {
-        public TypedServiceDescriptorBuilder() : base(new []{typeof(T)})
+        public TypedServiceDescriptorBuilder() : base(new[] {typeof(T)})
         {
         }
 
-        public new IToBinding To<TTo>(TTo toObject) where TTo : T
+        public new IToInstanceBinding ImplementedByInstance<TTo>(TTo toObject) where TTo : T
         {
             Descriptor.ImplementationObject = toObject;
             return this;
         }
         
-        public new IToBinding To<TTo>() where TTo : T
+        public new IToTypeBinding ImplementedBy<TTo>() where TTo : T
         {
             Descriptor.ImplementationType = typeof(TTo);
+            return this;
+        }
+        
+        public new IToTypeBinding ImplementedBy(Type type)
+        {
+            Descriptor.ImplementationType = type;
             return this;
         }
     }

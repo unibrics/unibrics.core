@@ -10,7 +10,7 @@
         
         public override void Install(IServicesRegistry services)
         {
-            services.AddSingleton<IExecutor, Executor>();
+            services.Add<IExecutor>().ImplementedBy<Executor>().AsSingleton();
         }
     }
 }
