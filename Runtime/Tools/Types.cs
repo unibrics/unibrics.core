@@ -32,7 +32,7 @@
         
         public static IEnumerable<Type> WithParent<TParent>()
         {
-            return CachedTypes().Where(type => typeof(TParent).IsAssignableFrom(type));
+            return CachedTypes().Where(type => !type.IsAbstract).Where(type => typeof(TParent).IsAssignableFrom(type));
         }
         
         public static (TAttribute attribute, Type type) EnsuredSingle<TAttribute>(
