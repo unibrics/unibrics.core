@@ -27,7 +27,7 @@
         public static IEnumerable<(TAttribute attribute, Type type)> WithParent<TAttribute>(
             this IEnumerable<(TAttribute attribute, Type type)> typesAndAttributes, Type type) where TAttribute : Attribute
         {
-            return typesAndAttributes.Where(tuple => type.IsAssignableFrom(tuple.type));
+            return typesAndAttributes.Where(tuple => type.IsAssignableFrom(tuple.type)).Where(tuple => !tuple.type.IsAbstract);
         }
         
         public static IEnumerable<Type> WithParent<TParent>()

@@ -1,7 +1,6 @@
 namespace Unibrics.Core.Tests
 {
     using System.Collections.Generic;
-    using System.Linq;
     using DI;
     using Services;
 
@@ -14,9 +13,13 @@ namespace Unibrics.Core.Tests
             Descriptors.Add(descriptor);
         }
 
+        public IResolver Resolver { get; }
+
         public IInstanceProvider InstanceProvider { get; }
-        public void PrepareServices()
+        
+        public void Validate()
         {
+            
         }
     }
 }

@@ -4,8 +4,6 @@
 
     public interface IDependencyInjectionService : IServicesRegistry
     {
-        IInstanceProvider InstanceProvider { get; }
-
-        void PrepareServices();
+        
     }
 }

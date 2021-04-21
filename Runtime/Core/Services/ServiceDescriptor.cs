@@ -7,17 +7,35 @@
 
     public class ServiceDescriptor
     {
-        [NotNull] public Type[] InterfaceTypes { get; }
+        [NotNull]
+        public Type[] InterfaceTypes { get; }
 
         public ServiceScope Scope { get; set; }
 
-        [CanBeNull] public Type ImplementationType { get; set; }
+        [CanBeNull]
+        public Type ImplementationType { get; set; }
 
-        [CanBeNull] public object ImplementationObject { get; set; }
+        [CanBeNull]
+        public object ImplementationObject { get; set; }
+        
+        public bool IsConfirmed { get; private set; }
 
+        private Action onDescriptorReady;
+        
         public ServiceDescriptor([NotNull] Type[] interfaceTypes)
         {
             InterfaceTypes = interfaceTypes;
+        }
+
+        public void OnDescriptorFinalized(Action action)
+        {
+            onDescriptorReady = action;
+        }
+
+        public void Confirm()
+        {
+            IsConfirmed = true;
+            onDescriptorReady?.Invoke();
         }
 
         public void Validate()
@@ -25,7 +43,7 @@
             if (ImplementationObject == null && ImplementationType == null)
             {
                 throw new ServiceValidationException($"You forget to provide implementation type" +
-                                                            $" or object for {BindingName()}");
+                                                     $" or object for {BindingName()}");
             }
 
             if (Scope == ServiceScope.Unset && ImplementationType != null)

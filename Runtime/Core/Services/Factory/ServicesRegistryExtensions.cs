@@ -18,5 +18,6 @@ namespace Unibrics.Core.Services
             registry.Add(binding.Descriptor);
             return binding;
         }
+
     }
 }

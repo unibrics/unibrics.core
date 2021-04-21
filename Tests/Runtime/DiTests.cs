@@ -4,6 +4,7 @@ namespace Unibrics.Core.Tests
     using System.Linq;
     using NUnit.Framework;
     using Services;
+    using Tools;
 
     [TestFixture]
     public class DiTests
@@ -81,6 +82,14 @@ namespace Unibrics.Core.Tests
 
             from.ImplementedByInstance(new FirstImplementation());
             Assert.DoesNotThrow(FirstDescriptor.Validate);
+        }
+
+        [Test]
+        public void _07WhenNotConfirmed_ShouldThrow()
+        {
+            services.Add<IFirstInterface>();
+
+            Assert.Throws<UnibricsException>(() => services.Validate());
         }
     }
 }

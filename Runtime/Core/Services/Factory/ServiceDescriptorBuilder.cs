@@ -14,11 +14,13 @@ namespace Unibrics.Core.Services
         public void AsSingleton()
         {
             Descriptor.Scope = ServiceScope.Singleton;
+            Descriptor.Confirm();
         }
 
         public void AsTransient()
         {
             Descriptor.Scope = ServiceScope.Transient;
+            Descriptor.Confirm();
         }
 
         public IToTypeBinding ImplementedBy<TTo>()
@@ -36,6 +38,7 @@ namespace Unibrics.Core.Services
         public IToInstanceBinding ImplementedByInstance<TTo>(TTo toObject)
         {
             Descriptor.ImplementationObject = toObject;
+            Descriptor.Confirm();
             return this;
         }
     }
@@ -49,6 +52,7 @@ namespace Unibrics.Core.Services
         public new IToInstanceBinding ImplementedByInstance<TTo>(TTo toObject) where TTo : T
         {
             Descriptor.ImplementationObject = toObject;
+            Descriptor.Confirm();
             return this;
         }
         

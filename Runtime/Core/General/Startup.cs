@@ -49,7 +49,6 @@
                 installer.Prepare(settings);
                 installer.Install(diService);
             });
-            diService.PrepareServices();
         }
 
         private void LaunchModules()
