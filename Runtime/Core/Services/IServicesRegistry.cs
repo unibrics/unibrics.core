@@ -6,10 +6,6 @@
     {
         void Add(ServiceDescriptor descriptor);
         
-        void Validate();
-        
-        IResolver Resolver { get; }
-        
         IInstanceProvider InstanceProvider { get; }
     }
 }

@@ -13,11 +13,8 @@ namespace Unibrics.Core.Tests
             Descriptors.Add(descriptor);
         }
 
-        public IResolver Resolver { get; }
-
         public IInstanceProvider InstanceProvider { get; }
-        
-        public void Validate()
+        public void PrepareServices()
         {
             
         }

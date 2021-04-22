@@ -21,10 +21,14 @@
             this.diService = diService;
         }
 
-        public void StartSequence()
+        public void Prepare()
         {
             LoadAppConfig();
             PrepareModules();
+        }
+
+        public void Start()
+        {
             LaunchModules();
             LaunchApp();
         }
@@ -49,6 +53,7 @@
                 installer.Prepare(settings);
                 installer.Install(diService);
             });
+            diService.PrepareServices();
         }
 
         private void LaunchModules()

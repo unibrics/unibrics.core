@@ -83,13 +83,5 @@ namespace Unibrics.Core.Tests
             from.ImplementedByInstance(new FirstImplementation());
             Assert.DoesNotThrow(FirstDescriptor.Validate);
         }
-
-        [Test]
-        public void _07WhenNotConfirmed_ShouldThrow()
-        {
-            services.Add<IFirstInterface>();
-
-            Assert.Throws<UnibricsException>(() => services.Validate());
-        }
     }
 }
