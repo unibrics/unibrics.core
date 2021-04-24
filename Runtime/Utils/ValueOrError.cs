@@ -1,12 +1,12 @@
 namespace Unibrics.Utils
 {
-    public readonly struct ValueOrError<TValue, TError> 
+    public readonly struct ValueOrError<TValue, TError> where TValue : class
     {
         public TValue Value { get; }
 
         public TError Error { get; }
 
-        public bool HasError => Value.Equals(default(TValue));
+        public bool HasError => Value == null;
 
         public bool IsOk => !HasError;
 
