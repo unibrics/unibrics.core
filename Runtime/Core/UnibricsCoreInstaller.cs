@@ -17,6 +17,7 @@
             services.Add<IExecutor>().ImplementedBy<Executor>().AsSingleton();
             services.Add(typeof(IFeatureSet), typeof(IInitializable)).ImplementedBy<FeatureSet>().AsSingleton();
             services.Add<IFeatureSuspender>().ImplementedBy<FeatureSuspender>().AsSingleton();
+            services.Add(typeof(IAttributedInstancesFactory<,>)).ImplementedBy(typeof(AttributedInstancesFactory<,>)).AsSingleton();
         }
     }
 
