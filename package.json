@@ -1,9 +1,9 @@
 {
   "name": "unibrics.core",
   "displayName": "Unibrics Core",
-  "version": "0.0.1-preview",
+  "version": "0.1.0",
   "unity": "2021.1",
-  "description": "Package Sample.",
+  "description": "Core Unibrics package.",
   "dependencies": {
     "com.unity.nuget.newtonsoft-json": "1.1.2"
   },
