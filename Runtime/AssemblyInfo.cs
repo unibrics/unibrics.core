@@ -3,3 +3,4 @@ using UnityEngine.Scripting;
 
 [assembly:UnibricsDiscoverable]
 [assembly: AlwaysLinkAssembly]
+[assembly: Preserve]
