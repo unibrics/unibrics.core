@@ -19,5 +19,18 @@ namespace Unibrics.Core.Services
             return binding;
         }
 
+        public static IFromBinding Add<TFrom1, TFrom2>(this IServicesRegistry registry)
+        {
+            var binding = new ServiceDescriptorBuilder(new[] { typeof(TFrom1), typeof(TFrom2) });
+            registry.Add(binding.Descriptor);
+            return binding;
+        }
+
+        public static IFromBinding Add<TFrom1, TFrom2, TFrom3>(this IServicesRegistry registry)
+        {
+            var binding = new ServiceDescriptorBuilder(new[] { typeof(TFrom1), typeof(TFrom2), typeof(TFrom3) });
+            registry.Add(binding.Descriptor);
+            return binding;
+        }
     }
 }
