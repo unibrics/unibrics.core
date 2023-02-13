@@ -18,7 +18,7 @@ namespace Unibrics.Core.Execution
         
         private IExecutableCommand current;
 
-        private readonly List<IExecutableCommand> queue = new List<IExecutableCommand>();
+        private readonly List<Func<IExecutableCommand>> queue = new();
 
         private readonly IInjector injector;
 
@@ -32,7 +32,7 @@ namespace Unibrics.Core.Execution
 
         public IExecutionSequence AndThen<T>() where T : IExecutableCommand
         {
-            queue.Add(instanceProvider.GetInstance<T>());
+            queue.Add(() => instanceProvider.GetInstance<T>());
             TryPickNextCommand();
             return this;
         }
@@ -44,8 +44,11 @@ namespace Unibrics.Core.Execution
 
         public IExecutionSequence AndThen<T>(T t) where T : IExecutableCommand
         {
-            injector.InjectTo(t);
-            queue.Add(t);
+            queue.Add(() =>
+            {
+                injector.InjectTo(t);
+                return t;
+            });
             TryPickNextCommand();
             return this;
         }
@@ -76,7 +79,7 @@ namespace Unibrics.Core.Execution
         {
             if (queue.Any() && current == null)
             {
-                current = queue[0];
+                current = queue[0]();
                 queue.RemoveAt(0);
                 Start(current);
             }
