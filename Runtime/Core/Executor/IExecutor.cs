@@ -1,11 +1,14 @@
 namespace Unibrics.Core.Execution
 {
+    using System;
     using DI;
     
     public interface IExecutor
     {
         IExecutionSequence Execute<T>() where T : IExecutableCommand;
         IExecutionSequence Execute(IExecutableCommand command);
+        
+        IExecutionSequence Execute(Action action);
     }
     
     internal class Executor : IExecutor
@@ -29,6 +32,11 @@ namespace Unibrics.Core.Execution
         {
             injector.InjectTo(command);
             return new ExecutionSequence(command, instanceProvider, injector);
+        }
+
+        public IExecutionSequence Execute(Action action)
+        {
+            return Execute(new LambdaExecutionCommand(action));
         }
     }
 }
