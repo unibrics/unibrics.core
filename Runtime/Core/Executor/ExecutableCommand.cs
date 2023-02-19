@@ -1,7 +1,8 @@
+using Unibrics.Logs;
+
 namespace Unibrics.Core.Execution
 {
     using System;
-   // using Logging;
 
 
     public interface IExecutableCommand
@@ -23,7 +24,7 @@ namespace Unibrics.Core.Execution
             }
             catch(Exception e)
             {
-                //Logger.Log($"EXCEPTION while executing {this}: {e.Message}\n{e.StackTrace}");
+                Logger.Log($"Exception while executing {this}: {e.Message}\n{e.StackTrace}");
                 throw e;
             }
 

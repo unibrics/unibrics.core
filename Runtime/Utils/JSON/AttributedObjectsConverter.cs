@@ -17,7 +17,7 @@ namespace Unibrics.Utils.Json
 
         protected virtual Type DefaultType() => null;
 
-        private JsonSerializer cachedSerializer = new JsonSerializer()
+        private JsonSerializer cachedSerializer = new()
         {
             DefaultValueHandling = DefaultValueHandling.Ignore
         };
@@ -77,7 +77,7 @@ namespace Unibrics.Utils.Json
 
         public void Init(JsonSerializerSettings serializerSettings)
         {
-            cachedSerializer = JsonSerializer.Create(new JsonSerializerSettings()
+            cachedSerializer = JsonSerializer.Create(new JsonSerializerSettings
             {
                 Converters = serializerSettings.Converters.Except(new[] {this}).ToList(),
                 DefaultValueHandling = DefaultValueHandling.Ignore

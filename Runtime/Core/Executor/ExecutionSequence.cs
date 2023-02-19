@@ -1,3 +1,6 @@
+using UnityEngine;
+using Logger = Unibrics.Logs.Logger;
+
 namespace Unibrics.Core.Execution
 {
     using System;
@@ -55,7 +58,7 @@ namespace Unibrics.Core.Execution
 
         private void Start(IExecutableCommand next)
         {
-            //Logger.Log("Execution", $"Starting executing {next} at {Time.time}");
+            Logger.Log("Execution", $"Starting executing {next} at {Time.time}");
             next.Execute(OnComplete);
         }
 
