@@ -2,6 +2,7 @@ namespace Unibrics.Core.Features
 {
     using System.Collections.Generic;
     using System.Diagnostics;
+    using Unibrics.Utils;
     using Utils;
 
     public interface IFeatureSuspender
