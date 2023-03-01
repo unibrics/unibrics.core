@@ -6,7 +6,7 @@
     using Features;
     using Launchers;
     using Services;
-    using Utils.Json;
+    using Unibrics.Utils.Json;
     using Version;
 
     [Install]
