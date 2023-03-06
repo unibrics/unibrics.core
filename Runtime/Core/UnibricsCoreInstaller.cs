@@ -17,7 +17,7 @@
 
         public override void Install(IServicesRegistry services)
         {
-            services.Add<IExecutor>().ImplementedBy<Executor>().AsSingleton();
+            services.Add<IExecutor>().ImplementedBy<Executor>().AsTransient();
             services.Add<IEnvironmentChecker, IEnvironmentSetter>().ImplementedBy<EnvironmentHandler>().AsSingleton();
             services.Add(typeof(IFeatureSet), typeof(IInitializable)).ImplementedBy<FeatureSet>().AsSingleton();
             services.Add<IFeatureSuspender>().ImplementedBy<FeatureSuspender>().AsSingleton();
