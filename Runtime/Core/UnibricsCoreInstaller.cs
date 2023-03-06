@@ -2,6 +2,7 @@
 {
     using System.Collections.Generic;
     using DI;
+    using DI.Environment;
     using Execution;
     using Features;
     using Launchers;
@@ -17,6 +18,7 @@
         public override void Install(IServicesRegistry services)
         {
             services.Add<IExecutor>().ImplementedBy<Executor>().AsSingleton();
+            services.Add<IEnvironmentChecker, IEnvironmentSetter>().ImplementedBy<EnvironmentHandler>().AsSingleton();
             services.Add(typeof(IFeatureSet), typeof(IInitializable)).ImplementedBy<FeatureSet>().AsSingleton();
             services.Add<IFeatureSuspender>().ImplementedBy<FeatureSuspender>().AsSingleton();
             services.Add<IVersionProvider>().ImplementedBy<AppVersionProvider>().AsSingleton();

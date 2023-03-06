@@ -7,6 +7,8 @@
     using Launchers;
     using Services;
     using Tools;
+    using UnityEngine;
+    using Types = Tools.Types;
 
     public class Startup
     {
