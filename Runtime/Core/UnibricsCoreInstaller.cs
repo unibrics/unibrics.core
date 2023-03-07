@@ -23,6 +23,7 @@
             services.Add<IFeatureSuspender>().ImplementedBy<FeatureSuspender>().AsSingleton();
             services.Add<IVersionProvider>().ImplementedBy<AppVersionProvider>().AsSingleton();
             services.Add(typeof(IAttributedInstancesFactory<,>)).ImplementedBy(typeof(AttributedInstancesFactory<,>)).AsSingleton();
+            services.Add(typeof(ILazyGetter<>)).ImplementedBy(typeof(LazyInject<>)).AsTransient();
             
             services.Add<IJsonSerializer>().ImplementedBy<JsonDotNetSerializer>().AsSingleton();
         }

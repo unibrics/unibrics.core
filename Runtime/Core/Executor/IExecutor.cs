@@ -2,7 +2,8 @@ namespace Unibrics.Core.Execution
 {
     using System;
     using DI;
-    
+    using UnityEngine;
+
     public interface IExecutor
     {
         IExecutionSequence Execute<T>() where T : IExecutableCommand;
@@ -13,11 +14,13 @@ namespace Unibrics.Core.Execution
     
     internal class Executor : IExecutor
     {
-        private readonly IInstanceProvider instanceProvider;
+        private readonly ILazyGetter<IInstanceProvider> instanceProvider;
         
-        private readonly IInjector injector;
+        private readonly ILazyGetter<IInjector> injector;
 
-        public Executor(IInstanceProvider instanceProvider, IInjector injector)
+        // we need lazy getters here, because DI environment is not constructed yet, so in order 
+        // to use scene contexts in executable commands, injector must be resolved later
+        public Executor(ILazyGetter<IInstanceProvider> instanceProvider, ILazyGetter<IInjector> injector)
         {
             this.injector = injector;
             this.instanceProvider = instanceProvider;
@@ -25,13 +28,13 @@ namespace Unibrics.Core.Execution
 
         public IExecutionSequence Execute<T>() where T : IExecutableCommand
         {
-            return new ExecutionSequence(instanceProvider.GetInstance<T>(), instanceProvider, injector);
+            return new ExecutionSequence(instanceProvider.Value.GetInstance<T>(), instanceProvider.Value, injector.Value);
         }
 
         public IExecutionSequence Execute(IExecutableCommand command)
         {
-            injector.InjectTo(command);
-            return new ExecutionSequence(command, instanceProvider, injector);
+            injector.Value.InjectTo(command);
+            return new ExecutionSequence(command, instanceProvider.Value, injector.Value);
         }
 
         public IExecutionSequence Execute(Action action)
