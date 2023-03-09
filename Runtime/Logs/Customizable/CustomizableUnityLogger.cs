@@ -9,7 +9,6 @@ namespace Unibrics.Logs
         public CustomizableUnityLogger()
         {
             settings = Resources.Load<LoggerSettings>("LoggerSettings");
-            Debug.Log($"settings {settings} {Resources.Load<TextAsset>("unibrics")?.text}");
             if (settings == null)
             {
                 settings = new DefaultLoggerSettings();
