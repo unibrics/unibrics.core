@@ -2,7 +2,7 @@ namespace Unibrics.Logs
 {
     using UnityEngine;
 
-    interface ILoggerEntry
+    public interface ILoggerEntry
     {
         bool IsEnabled { get; }
         

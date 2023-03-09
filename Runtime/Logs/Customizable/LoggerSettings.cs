@@ -5,7 +5,7 @@ namespace Unibrics.Logs
     using UnityEngine;
 
     [CreateAssetMenu(menuName = "Unibrics/Logger/Settings", fileName = "LoggerSettings")]
-    class LoggerSettings : ScriptableObject, ILoggerSettings
+    public class LoggerSettings : ScriptableObject, ILoggerSettings
     {
         [SerializeField]
         private List<LoggerEntry> entries;
