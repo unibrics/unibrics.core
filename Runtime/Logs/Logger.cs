@@ -5,7 +5,7 @@
 
     public static class Logger
     {
-        public static ILogger LoggerImplementation { get; set; } = new SimpleUnityLogger();
+        public static ILogger LoggerImplementation { get; set; } = new CustomizableUnityLogger();
 
         private static readonly IDictionary<string, List<string>> history = new Dictionary<string, List<string>>();
 
