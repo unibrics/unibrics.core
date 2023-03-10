@@ -9,10 +9,25 @@ namespace Unibrics.Core.Features
         public virtual bool DefaultSuspensionValue => false;
 
         public virtual bool DoNotResetValueWithSave => false;
-        
-        public bool IsSuspended { get; private set; }
-        
+
+        protected virtual bool IsActiveByDefault => true;
+
+        public bool IsSuspended
+        {
+            get
+            {
+                if (isSuspended.HasValue)
+                {
+                    return isSuspended.Value;
+                }
+
+                return !IsActiveByDefault;
+            }
+        }
+
         public abstract string Id { get; }
+
+        private bool? isSuspended;
 
         public virtual void SetSuspendedTo(bool value)
         {
@@ -20,7 +35,7 @@ namespace Unibrics.Core.Features
             {
                 throw new UnibricsException($"Feature {GetType().Name} doesn't support suspension");
             }
-            IsSuspended = value;
+            isSuspended = value;
         }
     }
 }
