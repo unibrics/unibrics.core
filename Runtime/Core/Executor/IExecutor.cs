@@ -28,13 +28,13 @@ namespace Unibrics.Core.Execution
 
         public IExecutionSequence Execute<T>() where T : IExecutableCommand
         {
-            return new ExecutionSequence(instanceProvider.Value.GetInstance<T>(), instanceProvider.Value, injector.Value);
+            return new ExecutionSequence(instanceProvider.Value.GetInstance<T>(), instanceProvider, injector);
         }
 
         public IExecutionSequence Execute(IExecutableCommand command)
         {
             injector.Value.InjectTo(command);
-            return new ExecutionSequence(command, instanceProvider.Value, injector.Value);
+            return new ExecutionSequence(command, instanceProvider, injector);
         }
 
         public IExecutionSequence Execute(Action action)

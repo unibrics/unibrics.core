@@ -17,15 +17,15 @@ namespace Unibrics.Core.Execution
 
     class ExecutionSequence : IExecutionSequence
     {
-        private readonly IInstanceProvider instanceProvider;
+        private readonly ILazyGetter<IInstanceProvider> instanceProvider;
         
         private IExecutableCommand current;
 
         private readonly List<Func<IExecutableCommand>> queue = new();
 
-        private readonly IInjector injector;
+        private readonly ILazyGetter<IInjector> injector;
 
-        public ExecutionSequence(IExecutableCommand current, IInstanceProvider instanceProvider, IInjector injector)
+        public ExecutionSequence(IExecutableCommand current, ILazyGetter<IInstanceProvider> instanceProvider, ILazyGetter<IInjector> injector)
         {
             this.current = current;
             this.instanceProvider = instanceProvider;
@@ -35,7 +35,7 @@ namespace Unibrics.Core.Execution
 
         public IExecutionSequence AndThen<T>() where T : IExecutableCommand
         {
-            queue.Add(() => instanceProvider.GetInstance<T>());
+            queue.Add(() => instanceProvider.Value.GetInstance<T>());
             TryPickNextCommand();
             return this;
         }
@@ -49,7 +49,7 @@ namespace Unibrics.Core.Execution
         {
             queue.Add(() =>
             {
-                injector.InjectTo(t);
+                injector.Value.InjectTo(t);
                 return t;
             });
             TryPickNextCommand();
