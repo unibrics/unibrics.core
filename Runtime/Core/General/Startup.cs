@@ -18,7 +18,7 @@
 
         private readonly List<string> modulesToExclude;
 
-        private List<IModuleInstaller> installers;
+        private readonly List<IModuleInstaller> installers = new();
 
         private IAppSettings settings;
 
@@ -30,6 +30,10 @@
 
         public void Prepare()
         {
+            // scan entire app for installers and searchable types,
+            // skip if needed and cache for further use
+            ScanAppTypes();
+            
             LoadAppConfig();
             PrepareModules();
         }
@@ -48,8 +52,6 @@
 
         private void PrepareModules()
         {
-            ScanAppTypes();
-            
             installers.ForEach(installer =>
             {
                 installer.Prepare(settings);
@@ -65,7 +67,8 @@
                 .Where(assembly => assembly.GetCustomAttribute<UnibricsDiscoverableAttribute>() != null))
             {
                 var assemblyTypes = assembly.GetTypes();
-                var installerType = types.FirstOrDefault(type => typeof(IModuleInstaller).IsAssignableFrom(type));
+                var installerType = assemblyTypes
+                    .FirstOrDefault(type => !type.IsAbstract && typeof(IModuleInstaller).IsAssignableFrom(type));
                 if (installerType != null)
                 {
                     var installer = (IModuleInstaller)Activator.CreateInstance(installerType);
@@ -73,7 +76,7 @@
                     {
                         continue;
                     }
-                    
+
                     installers.Add(installer);
                 }
                 
