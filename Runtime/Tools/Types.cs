@@ -10,17 +10,15 @@
     {
         private static List<Type> cachedTypes;
 
-        private static List<Type> CachedTypes()
+        internal static void SetSearchableTypes(List<Type> types)
         {
-            return cachedTypes ??= AppDomain.CurrentDomain.GetAssemblies()
-                .Where(assembly => assembly.GetCustomAttribute<UnibricsDiscoverableAttribute>() != null)
-                .SelectMany(assembly => assembly.GetTypes()).ToList();
+            cachedTypes = types;
         }
-
+        
         public static IEnumerable<(TAttribute attribute, Type type)> AnnotatedWith<TAttribute>()
             where TAttribute : Attribute
         {
-            return CachedTypes().Select(type => ((TAttribute) type.GetCustomAttribute(typeof(TAttribute)), type))
+            return cachedTypes.Select(type => ((TAttribute) type.GetCustomAttribute(typeof(TAttribute)), type))
                 .Where(tuple => tuple.Item1 != null);
         }
 
@@ -32,7 +30,7 @@
         
         public static IEnumerable<Type> WithParent<TParent>()
         {
-            return CachedTypes().Where(type => !type.IsAbstract).Where(type => typeof(TParent).IsAssignableFrom(type));
+            return cachedTypes.Where(type => !type.IsAbstract).Where(type => typeof(TParent).IsAssignableFrom(type));
         }
         
         public static (TAttribute attribute, Type type) EnsuredSingle<TAttribute>(

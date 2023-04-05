@@ -1,7 +1,9 @@
 ﻿namespace Unibrics.Core
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Reflection;
     using Config;
     using DI;
     using Launchers;
@@ -14,17 +16,24 @@
     {
         private readonly IDependencyInjectionService diService;
 
-        private List<IModuleInstaller> installers;
+        private readonly List<string> modulesToExclude;
+
+        private readonly List<IModuleInstaller> installers = new();
 
         private IAppSettings settings;
 
-        public Startup(IDependencyInjectionService diService)
+        public Startup(IDependencyInjectionService diService, List<string> modulesToExclude)
         {
+            this.modulesToExclude = modulesToExclude;
             this.diService = diService;
         }
 
         public void Prepare()
         {
+            // scan entire app for installers and searchable types,
+            // skip if needed and cache for further use
+            ScanAppTypes();
+            
             LoadAppConfig();
             PrepareModules();
         }
@@ -43,19 +52,39 @@
 
         private void PrepareModules()
         {
-            installers = Types.AnnotatedWith<InstallAttribute>()
-                .WithParent(typeof(IModuleInstaller))
-                .TypesOnly()
-                .CreateInstances<IModuleInstaller>()
-                .OrderByDescending(installer => installer.Priority)
-                .ToList();
-
             installers.ForEach(installer =>
             {
                 installer.Prepare(settings);
                 installer.Install(diService);
             });
             diService.PrepareServices();
+        }
+        
+        private void ScanAppTypes()
+        {
+            var types = new List<Type>();
+            foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies()
+                .Where(assembly => assembly.GetCustomAttribute<UnibricsDiscoverableAttribute>() != null))
+            {
+                var assemblyTypes = assembly.GetTypes();
+                var idAttribute = assembly.GetCustomAttribute<UnibricsModuleIdAttribute>();
+                if (idAttribute != null)
+                {
+                    if (modulesToExclude.Contains(idAttribute.Id))
+                    {
+                        continue;
+                    }
+                }
+                
+                installers
+                    .AddRange(assemblyTypes
+                    .Where(type => !type.IsAbstract && typeof(IModuleInstaller).IsAssignableFrom(type))
+                    .Select(installerType => (IModuleInstaller)Activator.CreateInstance(installerType)));
+                
+                types.AddRange(assemblyTypes);
+            }
+
+            Types.SetSearchableTypes(types);
         }
 
         private void LaunchModules()
@@ -69,8 +98,11 @@
 
         private void LaunchApp()
         {
-            var launcherType = Types.AnnotatedWith<InstallAttribute>().WithParent(typeof(AppLauncher)).EnsuredSingle()
+            var launcherType = Types.AnnotatedWith<InstallAttribute>()
+                .WithParent(typeof(AppLauncher))
+                .EnsuredSingle()
                 .Type();
+            
             if (launcherType == null)
             {
                 return;
@@ -79,5 +111,6 @@
             var launcher = diService.InstanceProvider.GetInstance<IAppLauncher>(launcherType);
             launcher.Launch();
         }
+
     }
 }
