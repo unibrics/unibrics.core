@@ -76,13 +76,10 @@
                     }
                 }
                 
-                var installerType = assemblyTypes
-                    .FirstOrDefault(type => !type.IsAbstract && typeof(IModuleInstaller).IsAssignableFrom(type));
-                if (installerType != null)
-                {
-                    var installer = (IModuleInstaller)Activator.CreateInstance(installerType);
-                    installers.Add(installer);
-                }
+                installers
+                    .AddRange(assemblyTypes
+                    .Where(type => !type.IsAbstract && typeof(IModuleInstaller).IsAssignableFrom(type))
+                    .Select(installerType => (IModuleInstaller)Activator.CreateInstance(installerType)));
                 
                 types.AddRange(assemblyTypes);
             }
