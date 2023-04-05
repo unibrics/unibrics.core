@@ -14,12 +14,15 @@
     {
         private readonly IDependencyInjectionService diService;
 
+        private readonly List<string> modulesToExclude;
+
         private List<IModuleInstaller> installers;
 
         private IAppSettings settings;
 
-        public Startup(IDependencyInjectionService diService)
+        public Startup(IDependencyInjectionService diService, List<string> modulesToExclude)
         {
+            this.modulesToExclude = modulesToExclude;
             this.diService = diService;
         }
 
@@ -47,6 +50,7 @@
                 .WithParent(typeof(IModuleInstaller))
                 .TypesOnly()
                 .CreateInstances<IModuleInstaller>()
+                .Where(installer => !modulesToExclude.Contains(installer.Id))
                 .OrderByDescending(installer => installer.Priority)
                 .ToList();
 

@@ -13,6 +13,8 @@ namespace Unibrics.Core
 
         protected IAppSettings AppSettings { get; private set; }
 
+        public virtual string Id => "undefined";
+
         public void Prepare(IAppSettings settings)
         {
             AppSettings = settings;
