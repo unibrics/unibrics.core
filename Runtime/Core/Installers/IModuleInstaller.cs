@@ -7,8 +7,6 @@
 
     interface IModuleInstaller
     {
-        string Id { get; }
-        
         Priority Priority { get; }
 
         Type LauncherType { get; }

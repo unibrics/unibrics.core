@@ -67,16 +67,20 @@
                 .Where(assembly => assembly.GetCustomAttribute<UnibricsDiscoverableAttribute>() != null))
             {
                 var assemblyTypes = assembly.GetTypes();
+                var idAttribute = assembly.GetCustomAttribute<UnibricsModuleIdAttribute>();
+                if (idAttribute != null)
+                {
+                    if (modulesToExclude.Contains(idAttribute.Id))
+                    {
+                        continue;
+                    }
+                }
+                
                 var installerType = assemblyTypes
                     .FirstOrDefault(type => !type.IsAbstract && typeof(IModuleInstaller).IsAssignableFrom(type));
                 if (installerType != null)
                 {
                     var installer = (IModuleInstaller)Activator.CreateInstance(installerType);
-                    if (modulesToExclude.Contains(installer.Id))
-                    {
-                        continue;
-                    }
-
                     installers.Add(installer);
                 }
                 
