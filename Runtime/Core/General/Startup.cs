@@ -1,7 +1,9 @@
 ﻿namespace Unibrics.Core
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Reflection;
     using Config;
     using DI;
     using Launchers;
@@ -46,20 +48,39 @@
 
         private void PrepareModules()
         {
-            installers = Types.AnnotatedWith<InstallAttribute>()
-                .WithParent(typeof(IModuleInstaller))
-                .TypesOnly()
-                .CreateInstances<IModuleInstaller>()
-                .Where(installer => !modulesToExclude.Contains(installer.Id))
-                .OrderByDescending(installer => installer.Priority)
-                .ToList();
-
+            ScanAppTypes();
+            
             installers.ForEach(installer =>
             {
                 installer.Prepare(settings);
                 installer.Install(diService);
             });
             diService.PrepareServices();
+        }
+        
+        private void ScanAppTypes()
+        {
+            var types = new List<Type>();
+            foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies()
+                .Where(assembly => assembly.GetCustomAttribute<UnibricsDiscoverableAttribute>() != null))
+            {
+                var assemblyTypes = assembly.GetTypes();
+                var installerType = types.FirstOrDefault(type => typeof(IModuleInstaller).IsAssignableFrom(type));
+                if (installerType != null)
+                {
+                    var installer = (IModuleInstaller)Activator.CreateInstance(installerType);
+                    if (modulesToExclude.Contains(installer.Id))
+                    {
+                        continue;
+                    }
+                    
+                    installers.Add(installer);
+                }
+                
+                types.AddRange(assemblyTypes);
+            }
+
+            Types.SetSearchableTypes(types);
         }
 
         private void LaunchModules()
@@ -73,8 +94,11 @@
 
         private void LaunchApp()
         {
-            var launcherType = Types.AnnotatedWith<InstallAttribute>().WithParent(typeof(AppLauncher)).EnsuredSingle()
+            var launcherType = Types.AnnotatedWith<InstallAttribute>()
+                .WithParent(typeof(AppLauncher))
+                .EnsuredSingle()
                 .Type();
+            
             if (launcherType == null)
             {
                 return;
@@ -83,5 +107,6 @@
             var launcher = diService.InstanceProvider.GetInstance<IAppLauncher>(launcherType);
             launcher.Launch();
         }
+
     }
 }
