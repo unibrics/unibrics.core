@@ -10,6 +10,17 @@
     {
         private static List<Type> cachedTypes;
 
+        private static List<Type> CachedTypes
+        {
+            get
+            {
+                return cachedTypes ??= AppDomain.CurrentDomain
+                    .GetAssemblies()
+                    .SelectMany(assembly => assembly.GetTypes())
+                    .ToList();
+            }
+        }
+
         internal static void SetSearchableTypes(List<Type> types)
         {
             cachedTypes = types;
