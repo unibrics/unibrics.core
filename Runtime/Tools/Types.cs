@@ -29,7 +29,7 @@
         public static IEnumerable<(TAttribute attribute, Type type)> AnnotatedWith<TAttribute>()
             where TAttribute : Attribute
         {
-            return cachedTypes.Select(type => ((TAttribute) type.GetCustomAttribute(typeof(TAttribute)), type))
+            return CachedTypes.Select(type => ((TAttribute) type.GetCustomAttribute(typeof(TAttribute)), type))
                 .Where(tuple => tuple.Item1 != null);
         }
 
@@ -41,7 +41,7 @@
         
         public static IEnumerable<Type> WithParent<TParent>()
         {
-            return cachedTypes.Where(type => !type.IsAbstract).Where(type => typeof(TParent).IsAssignableFrom(type));
+            return CachedTypes.Where(type => !type.IsAbstract).Where(type => typeof(TParent).IsAssignableFrom(type));
         }
         
         public static (TAttribute attribute, Type type) EnsuredSingle<TAttribute>(
