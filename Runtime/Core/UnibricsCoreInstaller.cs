@@ -29,12 +29,14 @@
         }
     }
 
-    class CoreLauncher : IModuleLauncher
+    class CoreLauncher : ModuleLauncher
     {
         [Inject]
         public List<IInitializable> Initializables { get; set; }
 
-        public void Launch()
+        public override Priority Priority => Priority.Highest;
+
+        public override void Launch()
         {
             foreach (var initializable in Initializables)
             {

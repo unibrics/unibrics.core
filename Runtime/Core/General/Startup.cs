@@ -93,6 +93,7 @@
                 .Select(installer => installer.LauncherType)
                 .Where(type => type != null)
                 .Select(type => diService.InstanceProvider.GetInstance<IModuleLauncher>(type))
+                .OrderByDescending(launcher => launcher.Priority)
                 .ToList().ForEach(launcher => launcher.Launch());
         }
 
