@@ -1,6 +1,7 @@
 ﻿namespace Unibrics.Core
 {
     using System.Collections.Generic;
+    using System.Linq;
     using DI;
     using DI.Environment;
     using Execution;
@@ -38,7 +39,7 @@
 
         public override void Launch()
         {
-            foreach (var initializable in Initializables)
+            foreach (var initializable in Initializables.OrderByDescending(i => i.InitializationPriority))
             {
                 initializable.Initialize();
             }
