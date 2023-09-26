@@ -5,7 +5,7 @@
     using Launchers;
     using Services;
 
-    interface IModuleInstaller
+    public interface IModuleInstaller
     {
         Priority Priority { get; }
 

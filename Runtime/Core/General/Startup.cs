@@ -7,6 +7,7 @@
     using Config;
     using DI;
     using Launchers;
+    using Processing;
     using Services;
     using Tools;
     using UnityEngine;
@@ -19,6 +20,8 @@
         private readonly List<string> modulesToExclude;
 
         private readonly List<IModuleInstaller> installers = new();
+        
+        private List<IModuleInstallerProcessor> processors;
 
         private IAppSettings settings;
 
@@ -33,6 +36,7 @@
             // scan entire app for installers and searchable types,
             // skip if needed and cache for further use
             ScanAppTypes();
+            CreateModuleProcessors();
             
             LoadAppConfig();
             PrepareModules();
@@ -50,10 +54,21 @@
             diService.Add<IAppSettings>().ImplementedByInstance(settings);
         }
 
+        private void CreateModuleProcessors()
+        {
+            processors = Types.AnnotatedWith<InstallAttribute>()
+                .WithParent(typeof(IModuleInstallerProcessor))
+                .TypesOnly()
+                .CreateInstances<IModuleInstallerProcessor>()
+                .ToList();
+        }
+
         private void PrepareModules()
         {
             installers.ForEach(installer =>
             {
+                processors.ForEach(processor => processor.Process(installer));
+
                 installer.Prepare(settings);
                 installer.Install(diService);
             });
