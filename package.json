@@ -1,7 +1,7 @@
 {
   "name": "unibrics.core",
   "displayName": "Unibrics Core",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "unity": "2021.1",
   "description": "Core Unibrics package.",
   "dependencies": {

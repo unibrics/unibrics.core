@@ -17,25 +17,12 @@
 
         [CanBeNull]
         public object ImplementationObject { get; set; }
-        
-        public bool IsConfirmed { get; private set; }
-
-        private Action onDescriptorReady;
-        
+       
+        public bool QueueForInjection { get; set; }
+       
         public ServiceDescriptor([NotNull] Type[] interfaceTypes)
         {
             InterfaceTypes = interfaceTypes;
-        }
-
-        public void OnDescriptorFinalized(Action action)
-        {
-            onDescriptorReady = action;
-        }
-
-        public void Confirm()
-        {
-            IsConfirmed = true;
-            onDescriptorReady?.Invoke();
         }
 
         public void Validate()

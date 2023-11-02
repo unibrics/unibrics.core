@@ -29,6 +29,6 @@ namespace Unibrics.Core.Services
 
     public interface IToInstanceBinding
     {
-        
+        IToInstanceBinding QueueInstanceForInjection();
     }
 }
