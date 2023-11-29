@@ -94,6 +94,7 @@
                 installers
                     .AddRange(assemblyTypes
                     .Where(type => !type.IsAbstract && typeof(IModuleInstaller).IsAssignableFrom(type))
+                    .Where(type => type.GetCustomAttribute<InstallAttribute>() != null)
                     .Select(installerType => (IModuleInstaller)Activator.CreateInstance(installerType)));
                 
                 types.AddRange(assemblyTypes);
