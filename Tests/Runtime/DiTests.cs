@@ -83,5 +83,40 @@ namespace Unibrics.Core.Tests
             from.ImplementedByInstance(new FirstImplementation());
             Assert.DoesNotThrow(FirstDescriptor.Validate);
         }
+
+        [Test]
+        public void _07RebindMustReplaceSingleBind()
+        {
+            services.Add<IFirstInterface>().ImplementedBy<FirstImplementation>().AsSingleton();
+            services.Rebind<IFirstInterface>().ImplementedBy<SecondImplementation>().AsSingleton();
+            
+            Assert.That(services.Descriptors.Count, Is.EqualTo(1));
+            Assert.That(FirstDescriptor.ImplementationType, Is.EqualTo(typeof(SecondImplementation)));
+        }
+        
+        [Test]
+        public void _08RebindMustReplaceMultiBind()
+        {
+            services.Add<IFirstInterface, ISecondInterface>().ImplementedBy<FirstImplementation>().AsSingleton();
+            services.Rebind<IFirstInterface>().ImplementedBy<SecondImplementation>().AsSingleton();
+
+            Assert.That(services.Descriptors.Count, Is.EqualTo(2));
+            
+            Assert.That(FirstDescriptor.InterfaceTypes.Length, Is.EqualTo(1));
+            Assert.That(FirstDescriptor.ImplementationType, Is.EqualTo(typeof(FirstImplementation)));
+
+            var secondDescriptor = services.Descriptors[1];
+            Assert.That(secondDescriptor.InterfaceTypes.Length, Is.EqualTo(1));
+            Assert.That(secondDescriptor.ImplementationType, Is.EqualTo(typeof(SecondImplementation)));
+        }
+        
+        [Test]
+        public void _09RebindMustThrowWhenNothingToRebind()
+        {
+            Assert.Throws<ServiceValidationException>(() =>
+            {
+                services.Rebind<IFirstInterface>().ImplementedBy<SecondImplementation>().AsSingleton();
+            });
+        }
     }
 }

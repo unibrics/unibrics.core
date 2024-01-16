@@ -1,6 +1,8 @@
 namespace Unibrics.Core.Tests
 {
+    using System;
     using System.Collections.Generic;
+    using System.Linq;
     using DI;
     using Services;
 
@@ -11,6 +13,16 @@ namespace Unibrics.Core.Tests
         public void Add(ServiceDescriptor descriptor)
         {
             Descriptors.Add(descriptor);
+        }
+
+        ServiceDescriptor IServicesRegistry.Get(Predicate<ServiceDescriptor> filter)
+        {
+            return Descriptors.FirstOrDefault(descriptor => filter(descriptor));
+        }
+
+        void IServicesRegistry.Drop(ServiceDescriptor descriptor)
+        {
+            Descriptors.Remove(descriptor);
         }
 
         public IInstanceProvider InstanceProvider { get; }
