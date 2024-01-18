@@ -69,7 +69,6 @@ namespace Unibrics.Core.Utils.Csv
             while (true)
             {
                 var cell = ParseNextCell(line, ref i);
-                Debug.Log($"Parsed next cell: {cell}");
                 if (cell == null)
                 {
                     break;
