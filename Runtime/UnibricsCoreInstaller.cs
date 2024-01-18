@@ -27,7 +27,7 @@
             services.Add(typeof(IAttributedInstancesFactory<,>)).ImplementedBy(typeof(AttributedInstancesFactory<,>)).AsSingleton();
             services.Add(typeof(ILazyGetter<>)).ImplementedBy(typeof(LazyInject<>)).AsTransient();
             services.Add<IDeviceIdProvider>().ImplementedBy<DeviceIdProvider>().AsSingleton();
-            services.Add<IDeviceFingerprintProvider>().ImplementedBy<IDeviceFingerprintProvider>().AsSingleton();
+            services.Add<IDeviceFingerprintProvider>().ImplementedBy<DeviceFingerprintProvider>().AsSingleton();
             
             services.Add<IJsonSerializer>().ImplementedBy<JsonDotNetSerializer>().AsSingleton();
         }
