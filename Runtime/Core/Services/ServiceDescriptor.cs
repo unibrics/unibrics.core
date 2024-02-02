@@ -8,7 +8,7 @@
     public class ServiceDescriptor
     {
         [NotNull]
-        public Type[] InterfaceTypes { get; }
+        public Type[] InterfaceTypes { get; private set; }
 
         public ServiceScope Scope { get; set; }
 
@@ -39,6 +39,13 @@
             }
 
             string BindingName() => $"[{string.Join(",", InterfaceTypes.Select(type => type.Name))}]";
+        }
+
+        public void RemoveInterfaceType(Type type)
+        {
+            var typesList = InterfaceTypes.ToList();
+            typesList.Remove(type);
+            InterfaceTypes = typesList.ToArray();
         }
     }
 

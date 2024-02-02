@@ -1,8 +1,10 @@
 namespace Unibrics.Core.Utils.Csv
 {
+    using System.Globalization;
     using System.IO;
     using System.Linq;
     using System.Text;
+    using UnityEngine;
 
     public class CsvReader
     {
@@ -122,6 +124,7 @@ namespace Unibrics.Core.Utils.Csv
                 {
                     break;
                 }
+                
                 if (line[i] == config.QuotationMark)
                 {
                     i++; // we're more interested in the next character

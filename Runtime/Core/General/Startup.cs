@@ -65,13 +65,13 @@
 
         private void PrepareModules()
         {
-            installers.ForEach(installer =>
+            foreach (var installer in installers.OrderByDescending(installer => installer.Priority))
             {
                 processors.ForEach(processor => processor.Process(installer));
 
                 installer.Prepare(settings);
                 installer.Install(diService);
-            });
+            }
             diService.PrepareServices();
         }
         

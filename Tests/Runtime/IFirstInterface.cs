@@ -13,4 +13,9 @@ namespace Unibrics.Core.Tests
     class FirstImplementation : IFirstInterface, ISecondInterface
     {
     }
+
+    class SecondImplementation : IFirstInterface, ISecondInterface
+    {
+        
+    }
 }
