@@ -25,7 +25,7 @@ namespace Unibrics.Core.Execution
             catch(Exception e)
             {
                 Logger.Log($"Exception while executing {this}: {e.Message}\n{e.StackTrace}");
-                throw e;
+                throw;
             }
 
             if (!retained)
