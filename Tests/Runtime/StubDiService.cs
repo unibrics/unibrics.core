@@ -26,6 +26,9 @@ namespace Unibrics.Core.Tests
         }
 
         public IInstanceProvider InstanceProvider { get; }
+
+        public IResolver Resolver { get; }
+
         public void PrepareServices()
         {
             

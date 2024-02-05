@@ -20,6 +20,7 @@
         public override void Install(IServicesRegistry services)
         {
             services.Add<IExecutor>().ImplementedBy<Executor>().AsTransient();
+            services.Add<IInitializablesRegistry>().ImplementedBy<InitializablesRegistry>().AsSingleton();
             services.Add<IEnvironmentChecker, IEnvironmentSetter>().ImplementedBy<EnvironmentHandler>().AsSingleton();
             services.Add<IFeatureSet, IInitializable>().ImplementedBy<FeatureSet>().AsSingleton();
             services.Add<IFeatureSuspender>().ImplementedBy<FeatureSuspender>().AsSingleton();
@@ -36,16 +37,13 @@
     class CoreLauncher : ModuleLauncher
     {
         [Inject]
-        public List<IInitializable> Initializables { get; set; }
+        public IInitializablesRegistry InitializablesRegistry { get; set; }
 
         public override Priority Priority => Priority.Highest;
 
         public override void Launch()
         {
-            foreach (var initializable in Initializables.OrderByDescending(i => i.InitializationPriority))
-            {
-                initializable.Initialize();
-            }
+            InitializablesRegistry.StartInitializables();
         }
     }
 }

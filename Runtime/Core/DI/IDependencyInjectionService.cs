@@ -5,6 +5,8 @@
     public interface IDependencyInjectionService : IServicesRegistry
     {
         IInstanceProvider InstanceProvider { get; }
+        
+        IResolver Resolver { get; }
 
         void PrepareServices();
     }
