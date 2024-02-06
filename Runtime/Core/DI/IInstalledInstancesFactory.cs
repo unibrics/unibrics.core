@@ -7,7 +7,7 @@ namespace Unibrics.Core.DI
         IEnumerable<TParent> GetInstances();
     }
 
-    abstract class InstalledInstancesFactory<TParent> : AttributedInstancesFactory<InstallAttribute, TParent>
+    class InstalledInstancesFactory<TParent> : AttributedInstancesFactory<InstallAttribute, TParent>, IInstalledInstancesFactory<TParent>
     {
         protected InstalledInstancesFactory(IInstanceProvider instanceProvider) : base(instanceProvider)
         {
