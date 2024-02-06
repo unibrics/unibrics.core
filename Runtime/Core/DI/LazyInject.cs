@@ -5,7 +5,7 @@ namespace Unibrics.Core.DI
         T Value { get; }
     }
     
-    class LazyInject<T> : ILazyGetter<T>
+    public class LazyInject<T> : ILazyGetter<T>
     {
         public T Value => instance ??= instanceProvider.Resolve<T>();
 
