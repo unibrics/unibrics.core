@@ -12,7 +12,7 @@ namespace Unibrics.Core.Execution
         IExecutionSequence Execute(Action action);
     }
     
-    public class Executor : IExecutor
+    class Executor : IExecutor
     {
         private readonly IInstanceProvider instanceProvider;
         
