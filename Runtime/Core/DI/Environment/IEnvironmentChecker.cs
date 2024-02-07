@@ -4,10 +4,4 @@ namespace Unibrics.Core.DI.Environment
     {
         bool IsCurrentEnvironment<T>() where T : IEnvironment;
     }
-
-    interface IEnvironmentSetter
-    {
-        void SetCurrentEnvironmentTo<T>() where T : IEnvironment, new();
-    }
-
 }

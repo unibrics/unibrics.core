@@ -6,6 +6,7 @@
     using System.Reflection;
     using Config;
     using DI;
+    using DI.Environment;
     using Launchers;
     using Processing;
     using Services;
@@ -21,11 +22,14 @@
 
         private readonly List<IModuleInstaller> installers = new();
 
+        private readonly IEnvironment environment;
+
         private List<IModuleInstallerProcessor> processors;
 
         private IAppSettings settings;
 
-        public Startup(IDependencyInjectionService diService, Predicate<ModuleDescriptor> shouldIncludeFilter)
+        public Startup(IEnvironment environment, IDependencyInjectionService diService,
+            Predicate<ModuleDescriptor> shouldIncludeFilter)
         {
             this.shouldIncludeFilter = shouldIncludeFilter;
             this.diService = diService;
@@ -65,11 +69,14 @@
 
         private void PrepareModules()
         {
+            var environmentHandler = new EnvironmentHandler(environment);
+            diService.Add<IEnvironmentChecker>().ImplementedByInstance(environmentHandler);
+
             foreach (var installer in installers.OrderByDescending(installer => installer.Priority))
             {
                 processors.ForEach(processor => processor.Process(installer));
 
-                installer.Prepare(settings);
+                installer.Prepare(settings, environmentHandler);
                 installer.Install(diService);
             }
             diService.PrepareServices();

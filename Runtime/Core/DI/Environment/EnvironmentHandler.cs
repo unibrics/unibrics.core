@@ -1,12 +1,12 @@
 namespace Unibrics.Core.DI.Environment
 {
-    class EnvironmentHandler : IEnvironmentSetter, IEnvironmentChecker
+    class EnvironmentHandler : IEnvironmentChecker
     {
-        private IEnvironment environment = new DefaultEnvironment();
-        
-        public void SetCurrentEnvironmentTo<T>() where T : IEnvironment, new()
+        private readonly IEnvironment environment;
+
+        public EnvironmentHandler(IEnvironment environment)
         {
-            environment = new T();
+            this.environment = environment;
         }
 
         public bool IsCurrentEnvironment<T>() where T : IEnvironment

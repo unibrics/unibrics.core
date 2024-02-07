@@ -24,7 +24,6 @@ namespace Unibrics.Core
         public override void Install(IServicesRegistry services)
         {
             services.Add<IInitializablesRegistry>().ImplementedBy<InitializablesRegistry>().AsSingleton();
-            services.Add<IEnvironmentChecker, IEnvironmentSetter>().ImplementedBy<EnvironmentHandler>().AsSingleton();
             services.Add<IFeatureSet, IInitializable>().ImplementedBy<FeatureSet>().AsSingleton();
             services.Add<IFeatureSuspender>().ImplementedBy<FeatureSuspender>().AsSingleton();
             services.Add<IVersionProvider>().ImplementedBy<AppVersionProvider>().AsSingleton();

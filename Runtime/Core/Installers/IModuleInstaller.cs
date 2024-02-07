@@ -2,6 +2,7 @@
 {
     using System;
     using Config;
+    using DI.Environment;
     using Launchers;
     using Services;
 
@@ -11,7 +12,7 @@
 
         Type LauncherType { get; }
         
-        void Prepare(IAppSettings settings);
+        void Prepare(IAppSettings settings, IEnvironmentChecker environmentChecker);
 
         void Install(IServicesRegistry services);
     }
