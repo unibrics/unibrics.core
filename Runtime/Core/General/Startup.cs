@@ -32,6 +32,7 @@
             Predicate<ModuleDescriptor> shouldIncludeFilter)
         {
             this.shouldIncludeFilter = shouldIncludeFilter;
+            this.environment = environment;
             this.diService = diService;
         }
 
