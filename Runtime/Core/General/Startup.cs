@@ -17,17 +17,17 @@
     {
         private readonly IDependencyInjectionService diService;
 
-        private readonly List<string> modulesToExclude;
+        private readonly Predicate<ModuleDescriptor> shouldIncludeFilter;
 
         private readonly List<IModuleInstaller> installers = new();
-        
+
         private List<IModuleInstallerProcessor> processors;
 
         private IAppSettings settings;
 
-        public Startup(IDependencyInjectionService diService, List<string> modulesToExclude)
+        public Startup(IDependencyInjectionService diService, Predicate<ModuleDescriptor> shouldIncludeFilter)
         {
-            this.modulesToExclude = modulesToExclude;
+            this.shouldIncludeFilter = shouldIncludeFilter;
             this.diService = diService;
         }
 
@@ -37,7 +37,7 @@
             // skip if needed and cache for further use
             ScanAppTypes();
             CreateModuleProcessors();
-            
+
             LoadAppConfig();
             PrepareModules();
         }
@@ -74,7 +74,7 @@
             }
             diService.PrepareServices();
         }
-        
+
         private void ScanAppTypes()
         {
             var types = new List<Type>();
@@ -83,20 +83,19 @@
             {
                 var assemblyTypes = assembly.GetTypes();
                 var idAttribute = assembly.GetCustomAttribute<UnibricsModuleIdAttribute>();
-                if (idAttribute != null)
+                var tags = assembly.GetCustomAttributes<UnibricsModuleTagAttribute>().Select(attr => attr.Id).ToList();
+                var descriptor = new ModuleDescriptor(idAttribute?.Id, tags);
+                if (!shouldIncludeFilter(descriptor))
                 {
-                    if (modulesToExclude.Contains(idAttribute.Id))
-                    {
-                        continue;
-                    }
+                    continue;
                 }
-                
+
                 installers
                     .AddRange(assemblyTypes
-                    .Where(type => !type.IsAbstract && typeof(IModuleInstaller).IsAssignableFrom(type))
-                    .Where(type => type.GetCustomAttribute<InstallAttribute>() != null)
-                    .Select(installerType => (IModuleInstaller)Activator.CreateInstance(installerType)));
-                
+                        .Where(type => !type.IsAbstract && typeof(IModuleInstaller).IsAssignableFrom(type))
+                        .Where(type => type.GetCustomAttribute<InstallAttribute>() != null)
+                        .Select(installerType => (IModuleInstaller)Activator.CreateInstance(installerType)));
+
                 types.AddRange(assemblyTypes);
             }
 
@@ -119,7 +118,7 @@
                 .WithParent(typeof(AppLauncher))
                 .EnsuredSingle()
                 .Type();
-            
+
             if (launcherType == null)
             {
                 return;
