@@ -84,13 +84,15 @@ namespace Unibrics.Core.Execution
 
         private void TryPickNextCommand()
         {
-            if (queue.Any() && current == null)
+            if (!queue.Any() || current != null)
             {
-                current = queue[0]();
-                queue.RemoveAt(0);
-                Start(current);
-                CommandStarted?.Invoke(current);
+                return;
             }
+            
+            var next = current = queue[0]();
+            queue.RemoveAt(0);
+            Start(next);
+            CommandStarted?.Invoke(next);
         }
     }
 }
