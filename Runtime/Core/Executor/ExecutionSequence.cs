@@ -10,6 +10,8 @@ namespace Unibrics.Core.Execution
 
     public interface IExecutionSequence
     {
+        event Action<IExecutableCommand> CommandStarted;
+        
         IExecutionSequence AndThen<T>() where T : IExecutableCommand;
         IExecutionSequence AndThen(Action action);
         IExecutionSequence AndThen<T>(T command) where T : IExecutableCommand;
@@ -17,6 +19,8 @@ namespace Unibrics.Core.Execution
 
     class ExecutionSequence : IExecutionSequence
     {
+        public event Action<IExecutableCommand> CommandStarted;
+        
         private readonly IInstanceProvider instanceProvider;
         
         private IExecutableCommand current;
@@ -32,7 +36,7 @@ namespace Unibrics.Core.Execution
             this.injector = injector;
             Start(current);
         }
-
+        
         public IExecutionSequence AndThen<T>() where T : IExecutableCommand
         {
             queue.Add(() => instanceProvider.GetInstance<T>());
@@ -85,6 +89,7 @@ namespace Unibrics.Core.Execution
                 current = queue[0]();
                 queue.RemoveAt(0);
                 Start(current);
+                CommandStarted?.Invoke(current);
             }
         }
     }
