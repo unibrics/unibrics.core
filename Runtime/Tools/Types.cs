@@ -20,15 +20,38 @@
                     .ToList();
             }
         }
+        
+        private static Dictionary<Type, List<Type>> attributedTypes;
 
         internal static void SetSearchableTypes(List<Type> types)
         {
             cachedTypes = types;
+            attributedTypes = new Dictionary<Type, List<Type>>();
+            foreach (var type in types)
+            {
+                var attributes = type.GetCustomAttributes();
+                foreach (var attribute in attributes)
+                {
+                    var attributeType = attribute.GetType();
+                    if (!attributedTypes.TryGetValue(attributeType, out var list))
+                    {
+                        list = new List<Type>();
+                        attributedTypes[attributeType] = list;
+                    }
+
+                    list.Add(type);
+                }
+            }
         }
         
         public static IEnumerable<(TAttribute attribute, Type type)> AnnotatedWith<TAttribute>()
             where TAttribute : Attribute
         {
+            if (attributedTypes.TryGetValue(typeof(TAttribute), out var cached))
+            {
+                return cached.Select(t => (t.GetCustomAttribute<TAttribute>(), t));
+            }
+            
             return CachedTypes.Select(type => ((TAttribute) type.GetCustomAttribute(typeof(TAttribute)), type))
                 .Where(tuple => tuple.Item1 != null);
         }
