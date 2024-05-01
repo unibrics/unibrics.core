@@ -62,7 +62,7 @@ namespace Unibrics.Core.Execution
 
         private void Start(IExecutableCommand next)
         {
-            Logger.Log("Execution", $"Starting executing {next} at {Time.realtimeSinceStartup}");
+            Logger.Log("Execution", $"Starting executing {next}");
             next.Execute(OnComplete);
         }
 
