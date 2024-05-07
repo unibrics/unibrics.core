@@ -4,6 +4,7 @@ namespace Unibrics.Core.Execution
     using System.Collections.Concurrent;
     using System.Collections.Generic;
     using System.Linq;
+    using UnityEngine;
 
     public interface ICommandExecutionOptions
     {
@@ -20,11 +21,17 @@ namespace Unibrics.Core.Execution
 
         public CommandExecutionStatus Status { get; private set; } = CommandExecutionStatus.Waiting;
 
-        public IExecutableCommand GetCommand() => commandGetter.Invoke();
-        
+        public IExecutableCommand GetCommand()
+        {
+            command = commandGetter.Invoke();
+            return command;
+        }
+
         public bool IsMainThread { get; private set; }
         
         public bool IsFinalCommand { get; }
+
+        private IExecutableCommand command;
 
         public CommandExecutionOptions(Func<IExecutableCommand> commandGetter)
         {
@@ -40,9 +47,17 @@ namespace Unibrics.Core.Execution
 
         internal static CommandExecutionOptions FinalOptions(Action action) => new(action);
 
-        public void OnCommandExecuted() => Status = CommandExecutionStatus.Executed;
-        
-        public void OnCommandStarted() => Status = CommandExecutionStatus.Started;
+        public void OnCommandExecuted()
+        {
+            Debug.Log($"Command {command} Executed!");
+            Status = CommandExecutionStatus.Executed;
+        }
+
+        public void OnCommandStarted()
+        {
+            Debug.Log($"Command {command} Started!");
+            Status = CommandExecutionStatus.Started;
+        }
 
         public ICommandExecutionOptions After<T>() where T : IExecutableCommand
         {

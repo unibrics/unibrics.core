@@ -234,14 +234,12 @@ namespace Unibrics.Core.Execution
                 return;
             }
 
-            Debug.Log($"getting command");
             var next = nextOptions.GetCommand();
-            Debug.Log($"on command started, {next}");
+            Debug.Log($"command started (Thread#{Thread.CurrentThread.ManagedThreadId}): {next}");
 
             next.Execute(result =>
             {
                 executedCommands.Enqueue(next.GetType());
-                Debug.Log($"Command is added to queue of completed");
                 nextOptions.OnCommandExecuted();
                 OnComplete(result, isMainThread);
                 onComplete?.Invoke();
