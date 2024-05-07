@@ -55,6 +55,7 @@ public static class UnibricsCoreInstallerExtensions
     public static void InstallCoreComponents(this IServicesRegistry services)
     {
         services.Add<IExecutor>().ImplementedBy<Executor>().AsTransient();
+        services.Add<IExecutionTreeBuilder>().ImplementedBy<ExecutionTreeBuilder>().AsTransient();
         services.Add(typeof(IAttributedInstancesFactory<,>)).ImplementedBy(typeof(AttributedInstancesFactory<,>)).AsSingleton();
         services.Add(typeof(IInstalledInstancesFactory<>)).ImplementedBy(typeof(InstalledInstancesFactory<>)).AsSingleton();
         services.Add(typeof(ILazyGetter<>)).ImplementedBy(typeof(LazyInject<>)).AsTransient();
