@@ -31,14 +31,14 @@ namespace Unibrics.Core.Execution
             this.commandGetter = commandGetter;
         }
 
-        private CommandExecutionOptions()
+        private CommandExecutionOptions(Action action)
         {
-            commandGetter = () => new LambdaExecutionCommand(() => { });
+            commandGetter = () => new LambdaExecutionCommand(action);
             IsFinalCommand = true;
             IsMainThread = true;
         }
 
-        internal static CommandExecutionOptions FinalOptions() => new();
+        internal static CommandExecutionOptions FinalOptions(Action action) => new(action);
 
         public void OnCommandExecuted() => Status = CommandExecutionStatus.Executed;
         

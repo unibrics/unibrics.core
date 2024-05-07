@@ -165,7 +165,8 @@ namespace Unibrics.Core.Execution
 
             // preparation
             AddSyncPoint();
-            bag[currentSection].Add(CommandExecutionOptions.FinalOptions());
+            var finalTask = new TaskCompletionSource<bool>();
+            bag[currentSection].Add(CommandExecutionOptions.FinalOptions(() => finalTask.TrySetResult(true)));
 
             // reset section
             currentSection = 0;
@@ -185,10 +186,13 @@ namespace Unibrics.Core.Execution
                 }, 38);
             }
 
-            await ExecuteMainThreadBranch();
+            ExecuteMainThreadBranch();
+
 
             //WaitHandle.WaitAll(handles.ToArray());
-            //await Task.Delay(3000);
+            var res = await Task.WhenAny(Task.Delay(5000), finalTask.Task);
+
+            Debug.Log($"Completing {finalTask.Task.IsCompleted}");
         }
 
         private async Task ExecuteMainThreadBranch()
@@ -208,11 +212,16 @@ namespace Unibrics.Core.Execution
                 $"fetched main thread command: {mainThreadCommand}, {Thread.CurrentThread.ManagedThreadId}, {mainThreadCommand.IsFinalCommand}");
             if (mainThreadCommand.IsFinalCommand)
             {
+                Debug.Log($"final command reached, exit");
+                mainThreadCommand.GetCommand().Execute(result => { });
                 return;
             }
 
             mainThreadCommand.OnCommandStarted();
-            Start(mainThreadCommand, true, async () => { await ExecuteMainThreadBranch().ConfigureAwait(true); });
+            Start(mainThreadCommand, true, async () =>
+            {
+                await ExecuteMainThreadBranch().ConfigureAwait(true);
+            });
         }
 
         private void Start(CommandExecutionOptions nextOptions, bool isMainThread, Action onComplete)
@@ -246,7 +255,7 @@ namespace Unibrics.Core.Execution
             for (var index = 0; index < commands.Count; index++)
             {
                 var command = commands[index];
-                
+
                 // priority to keep execution in current background thread
                 // instead of scheduling another task to thread pool
                 if (!isMainThread && index == 0)

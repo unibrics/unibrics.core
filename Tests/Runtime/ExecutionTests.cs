@@ -166,6 +166,29 @@ namespace Unibrics.Core.Tests
             await tree.Execute();
             Assert.That(list.Distinct().Count(), Is.EqualTo(1));
         }
+        
+        /// <summary>
+        /// A(m) - [B, C, D]b - E(m) 
+        /// </summary>
+        [Test]
+        public async Task _08Sample_Diamond()
+        {
+            var list = new List<int>();
+            tree.AddCommand(new LongCommandA(() => list.Add(ThreadId))).InTheMainThread();
+            tree.AddCommand(new LongCommandB(() => list.Add(ThreadId))).After<LongCommandA>();
+            tree.AddCommand(new LongCommandC(() => list.Add(ThreadId))).After<LongCommandA>();
+            tree.AddCommand(new LongCommandD(() => list.Add(ThreadId))).After<LongCommandA>();
+            tree.AddCommand(new LongCommandE(() => list.Add(ThreadId)))
+                .After<LongCommandB>()
+                .After<LongCommandC>()
+                .After<LongCommandD>()
+                .InTheMainThread();
+
+            await tree.Execute();
+            Assert.That(list.Distinct().Count(), Is.EqualTo(4));
+            Assert.That(list.First(), Is.EqualTo(1));
+            Assert.That(list.Last(), Is.EqualTo(1));
+        }
     }
 
     class LongCommand : ExecutableCommand
@@ -216,6 +239,13 @@ namespace Unibrics.Core.Tests
     class LongCommandD : LongCommand
     {
         public LongCommandD(Action callback) : base(callback)
+        {
+        }
+    }
+    
+    class LongCommandE : LongCommand
+    {
+        public LongCommandE(Action callback) : base(callback)
         {
         }
     }
