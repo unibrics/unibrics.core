@@ -2,7 +2,8 @@
     "name": "Unibrics.Core.Tests",
     "rootNamespace": "",
     "references": [
-        "GUID:b3625dafe267886428923df2a463e029"
+        "GUID:b3625dafe267886428923df2a463e029",
+        "GUID:f51ebe6a0ceec4240a699833d6309b23"
     ],
     "includePlatforms": [
         "Editor"

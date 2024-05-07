@@ -222,6 +222,7 @@ namespace Unibrics.Core.Execution
                 return;
             }
 
+            Debug.Log($"Main thread starting");
             mainThreadCommand.OnCommandStarted();
             Start(mainThreadCommand, true, async () =>
             {
@@ -291,6 +292,7 @@ namespace Unibrics.Core.Execution
                             {
                                 if (nextMainThreadCommandTcs.TrySetResult(mainThreadCommand))
                                 {
+                                    Debug.Log($"setting main thread next command");
                                     mainThreadCommand.OnCommandStarted();
                                 }
                             }

@@ -6,6 +6,7 @@ namespace Unibrics.Core.Tests
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using Cysharp.Threading.Tasks;
     using DI;
     using Execution;
     using NSubstitute;
@@ -31,6 +32,7 @@ namespace Unibrics.Core.Tests
             provider.GetInstance<LongCommandB>().Returns(new LongCommandB(null));
             provider.GetInstance<LongCommandC>().Returns(new LongCommandC(null));
             provider.GetInstance<LongCommandD>().Returns(new LongCommandD(null));
+            provider.GetInstance<UniTaskCommand>().Returns(new UniTaskCommand());
             provider.GetInstance<MainThreadCommandA>().Returns(new MainThreadCommandA(null));
             tree = new ExecutionTreeBuilder(provider).CreateTree();
         }
@@ -189,6 +191,18 @@ namespace Unibrics.Core.Tests
             Assert.That(list.First(), Is.EqualTo(1));
             Assert.That(list.Last(), Is.EqualTo(1));
         }
+
+        [Test]
+        public async Task _09UniTasksShouldWork()
+        {
+            var id = 0;
+            tree.AddCommand<LongCommandA>();
+            tree.AddCommand<UniTaskCommand>().After<LongCommandA>();
+            tree.AddCommand(new LongCommandB(() => id = 7)).After<UniTaskCommand>();
+
+            await tree.Execute();
+            Assert.That(id, Is.EqualTo(7));
+        }
     }
 
     class LongCommand : ExecutableCommand
@@ -277,6 +291,29 @@ namespace Unibrics.Core.Tests
 
         public MainThreadCommandA(Action callback) : base(callback)
         {
+        }
+    }
+
+    class UniTaskCommand : ExecutableCommand
+    {
+
+        protected override async void ExecuteInternal()
+        {
+            Retain();
+            Debug.Log($"Retained {Thread.CurrentThread.ManagedThreadId}");
+            var synchronizationContext = SynchronizationContext.Current;
+           
+
+            await Test();
+            //UniTask.ReturnToSynchronizationContext(synchronizationContext);
+            Debug.Log($"Returned {Thread.CurrentThread.ManagedThreadId}");
+            Debug.Log($"Releasing");
+            ReleaseAndComplete();
+        }
+
+        private UniTask Test()
+        {
+            return UniTask.CompletedTask;
         }
     }
 }

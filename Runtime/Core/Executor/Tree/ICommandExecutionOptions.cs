@@ -23,7 +23,10 @@ namespace Unibrics.Core.Execution
 
         public IExecutableCommand GetCommand()
         {
-            command = commandGetter.Invoke();
+            if (command == null)
+            {
+                command = commandGetter.Invoke();
+            }
             return command;
         }
 
@@ -55,7 +58,8 @@ namespace Unibrics.Core.Execution
 
         public void OnCommandStarted()
         {
-            Debug.Log($"Command {command} Started!");
+            GetCommand();
+            Debug.Log($"Command {command} ({IsFinalCommand}) Started!");
             Status = CommandExecutionStatus.Started;
         }
 
@@ -94,8 +98,17 @@ namespace Unibrics.Core.Execution
 
         public override string ToString()
         {
+            string text;
+            if (command == null)
+            {
+                text = $"Null, but must be {commandGetter.Invoke().GetType().Name}";
+            }
+            else
+            {
+                text = command.GetType().Name;
+            }
             return
-                $"{command},{nameof(Status)}: {Status}, {nameof(IsMainThread)}: {IsMainThread}, {nameof(IsFinalCommand)}: {IsFinalCommand}";
+                $"{text} - {Status}, {nameof(IsMainThread)}: {IsMainThread}, {nameof(IsFinalCommand)}: {IsFinalCommand}";
         }
     }
 
