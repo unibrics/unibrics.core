@@ -95,7 +95,7 @@ namespace Unibrics.Core.Execution
         public override string ToString()
         {
             return
-                $"{nameof(Status)}: {Status}, {nameof(IsMainThread)}: {IsMainThread}, {nameof(IsFinalCommand)}: {IsFinalCommand}";
+                $"{command},{nameof(Status)}: {Status}, {nameof(IsMainThread)}: {IsMainThread}, {nameof(IsFinalCommand)}: {IsFinalCommand}";
         }
     }
 

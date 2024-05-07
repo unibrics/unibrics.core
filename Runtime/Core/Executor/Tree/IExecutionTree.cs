@@ -28,6 +28,8 @@ namespace Unibrics.Core.Execution
         private readonly List<List<CommandExecutionOptions>> bag = new() { new List<CommandExecutionOptions>() };
 
         private readonly ConcurrentQueue<Type> executedCommands = new();
+        
+        private readonly TaskCompletionSource<bool> finalTask = new();
 
         private TaskCompletionSource<CommandExecutionOptions> nextMainThreadCommandTcs;
 
@@ -165,7 +167,6 @@ namespace Unibrics.Core.Execution
 
             // preparation
             AddSyncPoint();
-            var finalTask = new TaskCompletionSource<bool>();
             bag[currentSection].Add(CommandExecutionOptions.FinalOptions(() => finalTask.TrySetResult(true)));
 
             // reset section
@@ -202,6 +203,10 @@ namespace Unibrics.Core.Execution
             if (mainThreadCommand == null)
             {
                 Debug.Log($"no command, will wait");
+                foreach (var command in bag[currentSection])
+                {
+                    Debug.Log($"State: {command}");
+                }
                 nextMainThreadCommandTcs = new();
                 mainThreadIsWaiting = true;
                 mainThreadCommand = await nextMainThreadCommandTcs.Task.ConfigureAwait(true);
@@ -294,7 +299,9 @@ namespace Unibrics.Core.Execution
                     break;
                 case ExecutionResult.Error:
                 case ExecutionResult.Aborted:
+                    Debug.LogError($"Execution aborted due to error");
                     bag.Clear();
+                    finalTask.TrySetResult(false);
                     break;
             }
         }
