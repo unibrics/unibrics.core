@@ -1,8 +1,8 @@
-using Unibrics.Logs;
-
 namespace Unibrics.Core.Execution
 {
     using System;
+    using UnityEngine;
+    using Logger = Logs.Logger;
 
 
     public interface IExecutableCommand
@@ -25,6 +25,7 @@ namespace Unibrics.Core.Execution
             catch(Exception e)
             {
                 Logger.Log($"Exception while executing {this}: {e.Message}\n{e.StackTrace}");
+                Debug.LogError($"Error during execution: {e.StackTrace}");
                 throw;
             }
 

@@ -302,8 +302,8 @@ namespace Unibrics.Core.Tests
             Retain();
             Debug.Log($"Retained {Thread.CurrentThread.ManagedThreadId}");
             var synchronizationContext = SynchronizationContext.Current;
-           
-
+            
+            await UniTask.Yield();
             await Test();
             //UniTask.ReturnToSynchronizationContext(synchronizationContext);
             Debug.Log($"Returned {Thread.CurrentThread.ManagedThreadId}");
@@ -311,9 +311,9 @@ namespace Unibrics.Core.Tests
             ReleaseAndComplete();
         }
 
-        private UniTask Test()
+        private async UniTask Test()
         {
-            return UniTask.CompletedTask;
+            await Task.Delay(TimeSpan.FromSeconds(1));
         }
     }
 }
