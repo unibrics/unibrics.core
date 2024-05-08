@@ -28,7 +28,7 @@ namespace Unibrics.Core.Execution
         private readonly List<List<CommandExecutionOptions>> bag = new() { new List<CommandExecutionOptions>() };
 
         private readonly ConcurrentQueue<Type> executedCommands = new();
-        
+
         private readonly TaskCompletionSource<bool> finalTask = new();
 
         private TaskCompletionSource<CommandExecutionOptions> nextMainThreadCommandTcs;
@@ -136,7 +136,7 @@ namespace Unibrics.Core.Execution
                 var isReadyToSwitchToNextSection = true;
                 foreach (var options in bag[currentSection])
                 {
-                    Debug.Log($"checking for main thread candidate: {options}");
+                    //Debug.Log($"checking for main thread candidate: {options}");
                     if (options.Status != CommandExecutionStatus.Executed)
                     {
                         isReadyToSwitchToNextSection = false;
@@ -191,7 +191,7 @@ namespace Unibrics.Core.Execution
 
 
             //WaitHandle.WaitAll(handles.ToArray());
-            var res = await Task.WhenAny(Task.Delay(5000), finalTask.Task);
+            var res = await Task.WhenAny(Task.Delay(10000), finalTask.Task);
 
             Debug.Log($"Completing {finalTask.Task.IsCompleted}");
         }
@@ -202,10 +202,12 @@ namespace Unibrics.Core.Execution
             var mainThreadCommand = GetAvailableMainThreadCommand();
             if (mainThreadCommand == null)
             {
-                Debug.Log($"no command, will wait");
-                foreach (var command in bag[currentSection])
+                if (currentSection < bag.Count)
                 {
-                    Debug.Log($"State: {command}");
+                    foreach (var command in bag[currentSection])
+                    {
+                        Debug.Log($"State: {command}");
+                    }
                 }
                 nextMainThreadCommandTcs = new();
                 mainThreadIsWaiting = true;
@@ -237,6 +239,7 @@ namespace Unibrics.Core.Execution
             {
                 Debug.Log($"command is null, skip");
                 onComplete?.Invoke();
+                Debug.Log($"Thread {isMainThread} completes!");
                 return;
             }
 

@@ -10,8 +10,8 @@
     using Launchers;
     using Processing;
     using Services;
+    using Threads;
     using Tools;
-    using UnityEngine;
     using Types = Tools.Types;
 
     public class Startup
@@ -41,6 +41,7 @@
             // scan entire app for installers and searchable types,
             // skip if needed and cache for further use
             ScanAppTypes();
+            Threading.CaptureMainThreadId();
             CreateModuleProcessors();
 
             LoadAppConfig();

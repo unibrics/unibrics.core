@@ -24,9 +24,10 @@ namespace Unibrics.Core.Execution
             }
             catch(Exception e)
             {
+                Debug.LogError($"Error during execution: {e}");
                 Logger.Log($"Exception while executing {this}: {e.Message}\n{e.StackTrace}");
-                Debug.LogError($"Error during execution: {e.StackTrace}");
-                throw;
+                onComplete(ExecutionResult.Error);
+                return;
             }
 
             if (!retained)

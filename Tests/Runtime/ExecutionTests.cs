@@ -11,6 +11,8 @@ namespace Unibrics.Core.Tests
     using Execution;
     using NSubstitute;
     using NUnit.Framework;
+    using Threads;
+    using UnityEngine.Networking;
     using Debug = UnityEngine.Debug;
 
     [TestFixture]
@@ -219,7 +221,7 @@ namespace Unibrics.Core.Tests
         protected override void ExecuteInternal()
         {
             A++;
-            Debug.Log($"Command Execute {GetType().Name} " + Thread.CurrentThread.ManagedThreadId);
+            Debug.Log($"Command Execute {GetType().Name} ({Threading.IsMainThread()})" + Thread.CurrentThread.ManagedThreadId);
             callback?.Invoke();
 
             Retain();
@@ -300,6 +302,17 @@ namespace Unibrics.Core.Tests
         protected override async void ExecuteInternal()
         {
             Retain();
+            try
+            {
+                var request = new UnityWebRequest(new Uri("https://5.ua"), "GET");
+            }
+            catch (Exception e)
+            {
+                Debug.Log($"{e}");
+                Console.WriteLine(e);
+                throw;
+            }
+            
             Debug.Log($"Retained {Thread.CurrentThread.ManagedThreadId}");
             var synchronizationContext = SynchronizationContext.Current;
             

@@ -1,9 +1,11 @@
-﻿using Unibrics.Core.DI;
-using Unibrics.Core.Execution;
-using Unibrics.Core.Services;
-
-namespace Unibrics.Core
+﻿namespace Unibrics.Core
 {
+    using Core;
+    using Unibrics.Core.DI;
+    using Unibrics.Core.Execution;
+    using Unibrics.Core.Services;
+    using Unibrics.Core.Threads;
+    using Application = UnityEngine.Application;
     using System.Collections.Generic;
     using System.Linq;
     using DI;
@@ -29,9 +31,9 @@ namespace Unibrics.Core
             services.Add<IVersionProvider>().ImplementedBy<AppVersionProvider>().AsSingleton();
             services.Add<IDeviceIdProvider>().ImplementedBy<DeviceIdProvider>().AsSingleton();
             services.Add<IDeviceFingerprintProvider>().ImplementedBy<DeviceFingerprintProvider>().AsSingleton();
-            
+
             services.Add<IJsonSerializer>().ImplementedBy<JsonDotNetSerializer>().AsSingleton();
-            
+
             services.InstallCoreComponents();
         }
     }
@@ -47,17 +49,5 @@ namespace Unibrics.Core
         {
             InitializablesRegistry.StartInitializables();
         }
-    }
-}
-
-public static class UnibricsCoreInstallerExtensions
-{
-    public static void InstallCoreComponents(this IServicesRegistry services)
-    {
-        services.Add<IExecutor>().ImplementedBy<Executor>().AsTransient();
-        services.Add<IExecutionTreeBuilder>().ImplementedBy<ExecutionTreeBuilder>().AsTransient();
-        services.Add(typeof(IAttributedInstancesFactory<,>)).ImplementedBy(typeof(AttributedInstancesFactory<,>)).AsSingleton();
-        services.Add(typeof(IInstalledInstancesFactory<>)).ImplementedBy(typeof(InstalledInstancesFactory<>)).AsSingleton();
-        services.Add(typeof(ILazyGetter<>)).ImplementedBy(typeof(LazyInject<>)).AsTransient();
     }
 }

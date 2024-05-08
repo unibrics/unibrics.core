@@ -5,7 +5,9 @@ namespace Unibrics.Core.Utils
     class DeviceIdProvider : IDeviceIdProvider
     {
         private string cachedFingerprint;
-        
-        public string DeviceId => SystemInfo.deviceUniqueIdentifier;
+
+        private string cachedId;
+
+        public string DeviceId => cachedId ??= SystemInfo.deviceUniqueIdentifier;
     }
 }
