@@ -4,10 +4,17 @@ namespace Unibrics.Core.Execution
 
     public interface IExecutionTreeBuilder
     {
-        IExecutionTree CreateTree();
+        IExecutionTreeOptions CreateTree();
     }
 
-    public class ExecutionTreeBuilder : IExecutionTreeBuilder
+    public interface IExecutionTreeOptions
+    {
+        IExecutionTree WithMainThreadAsDefault();
+        
+        IExecutionTree WithBackgroundThreadAsDefault();
+    }
+
+    public class ExecutionTreeBuilder : IExecutionTreeBuilder, IExecutionTreeOptions
     {
         private readonly IInstanceProvider instanceProvider;
 
@@ -16,9 +23,19 @@ namespace Unibrics.Core.Execution
             this.instanceProvider = instanceProvider;
         }
 
-        public IExecutionTree CreateTree()
+        public IExecutionTreeOptions CreateTree()
         {
-            return new ExecutionTree(instanceProvider);
+            return this;
+        }
+        
+        public IExecutionTree WithMainThreadAsDefault()
+        {
+            return new ExecutionTree(instanceProvider, true);
+        }
+
+        public IExecutionTree WithBackgroundThreadAsDefault()
+        {
+            return new ExecutionTree(instanceProvider, false);
         }
     }
 }

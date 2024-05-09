@@ -36,7 +36,7 @@ namespace Unibrics.Core.Tests
             provider.GetInstance<LongCommandD>().Returns(new LongCommandD(null));
             provider.GetInstance<UniTaskCommand>().Returns(new UniTaskCommand());
             provider.GetInstance<MainThreadCommandA>().Returns(new MainThreadCommandA(null));
-            tree = new ExecutionTreeBuilder(provider).CreateTree();
+            tree = new ExecutionTreeBuilder(provider).CreateTree().WithBackgroundThreadAsDefault();
         }
 
         [Test]

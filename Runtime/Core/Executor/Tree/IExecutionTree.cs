@@ -8,6 +8,7 @@ namespace Unibrics.Core.Execution
     using System.Threading.Tasks;
     using DI;
     using UnityEngine;
+    using Logger = Logs.Logger;
 
     public interface IExecutionTree
     {
@@ -37,28 +38,30 @@ namespace Unibrics.Core.Execution
 
         private bool mainThreadIsWaiting;
 
-        public ExecutionTree(IInstanceProvider instanceProvider)
+        private bool mainThreadIsDefault;
+
+        public ExecutionTree(IInstanceProvider instanceProvider, bool mainThreadIsDeafult)
         {
             this.instanceProvider = instanceProvider;
         }
 
         public ICommandExecutionOptions AddCommand<T>() where T : IExecutableCommand
         {
-            var options = new CommandExecutionOptions(() => instanceProvider.GetInstance<T>());
+            var options = new CommandExecutionOptions(() => instanceProvider.GetInstance<T>(), mainThreadIsDefault);
             bag[currentSection].Add(options);
             return options;
         }
 
         public ICommandExecutionOptions AddCommand(IExecutableCommand command)
         {
-            var options = new CommandExecutionOptions(() => command);
+            var options = new CommandExecutionOptions(() => command, mainThreadIsDefault);
             bag[currentSection].Add(options);
             return options;
         }
 
         public ICommandExecutionOptions AddCommand(Action action)
         {
-            var options = new CommandExecutionOptions(() => new LambdaExecutionCommand(action));
+            var options = new CommandExecutionOptions(() => new LambdaExecutionCommand(action), mainThreadIsDefault);
             bag[currentSection].Add(options);
             return options;
         }
@@ -191,14 +194,14 @@ namespace Unibrics.Core.Execution
 
 
             //WaitHandle.WaitAll(handles.ToArray());
-            var res = await Task.WhenAny(Task.Delay(10000), finalTask.Task);
+            var res = await Task.WhenAny(Task.Delay(20000), finalTask.Task);
 
-            Debug.Log($"Completing {finalTask.Task.IsCompleted}");
+            Log($"Completing {finalTask.Task.IsCompleted}");
         }
 
         private async Task ExecuteMainThreadBranch()
         {
-            Debug.Log($"starting main thread fetching...");
+            Log($"starting main thread fetching...");
             var mainThreadCommand = GetAvailableMainThreadCommand();
             if (mainThreadCommand == null)
             {
@@ -206,7 +209,7 @@ namespace Unibrics.Core.Execution
                 {
                     foreach (var command in bag[currentSection])
                     {
-                        Debug.Log($"State: {command}");
+                        Log($"State: {command}");
                     }
                 }
                 nextMainThreadCommandTcs = new();
@@ -214,17 +217,15 @@ namespace Unibrics.Core.Execution
                 mainThreadCommand = await nextMainThreadCommandTcs.Task.ConfigureAwait(true);
                 mainThreadIsWaiting = false;
             }
-
-            Debug.Log(
-                $"fetched main thread command: {mainThreadCommand}, {Thread.CurrentThread.ManagedThreadId}, {mainThreadCommand.IsFinalCommand}");
+            
+            Log($"fetched main thread command: {mainThreadCommand}, {Thread.CurrentThread.ManagedThreadId}, {mainThreadCommand.IsFinalCommand}");
             if (mainThreadCommand.IsFinalCommand)
             {
-                Debug.Log($"final command reached, exit");
+                Log($"final command reached, exit");
                 mainThreadCommand.GetCommand().Execute(result => { });
                 return;
             }
-
-            Debug.Log($"Main thread starting");
+            
             mainThreadCommand.OnCommandStarted();
             Start(mainThreadCommand, true, async () =>
             {
@@ -237,14 +238,14 @@ namespace Unibrics.Core.Execution
             //var nextOptions = GetAvailableCommands().FirstOrDefault();
             if (nextOptions == null)
             {
-                Debug.Log($"command is null, skip");
+                Log($"command is null, skip");
                 onComplete?.Invoke();
-                Debug.Log($"Thread {isMainThread} completes!");
+                Log($"Thread {isMainThread} completes!");
                 return;
             }
 
             var next = nextOptions.GetCommand();
-            Debug.Log($"command started (Thread#{Thread.CurrentThread.ManagedThreadId}): {next}");
+            Log($"command started (Thread#{Thread.CurrentThread.ManagedThreadId}): {next}");
 
             next.Execute(result =>
             {
@@ -258,7 +259,6 @@ namespace Unibrics.Core.Execution
         private void TryStartAllPossibleCommands(bool isMainThread)
         {
             var commands = GetAvailableBackgroundCommands().ToList();
-            Debug.Log($"Available commands: {commands.Count}");
             for (var index = 0; index < commands.Count; index++)
             {
                 var command = commands[index];
@@ -284,7 +284,7 @@ namespace Unibrics.Core.Execution
             switch (result)
             {
                 case ExecutionResult.Complete:
-                    Debug.Log($"Command complete");
+                    Log($"Command complete");
                     TryStartAllPossibleCommands(isMainThread);
                     if (mainThreadIsWaiting)
                     {
@@ -295,7 +295,6 @@ namespace Unibrics.Core.Execution
                             {
                                 if (nextMainThreadCommandTcs.TrySetResult(mainThreadCommand))
                                 {
-                                    Debug.Log($"setting main thread next command");
                                     mainThreadCommand.OnCommandStarted();
                                 }
                             }
@@ -309,6 +308,11 @@ namespace Unibrics.Core.Execution
                     finalTask.TrySetResult(false);
                     break;
             }
+        }
+
+        private void Log(string message)
+        {
+            Logger.Log("Execution", message);
         }
     }
 }

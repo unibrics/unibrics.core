@@ -36,8 +36,9 @@ namespace Unibrics.Core.Execution
 
         private IExecutableCommand command;
 
-        public CommandExecutionOptions(Func<IExecutableCommand> commandGetter)
+        public CommandExecutionOptions(Func<IExecutableCommand> commandGetter, bool mainThread)
         {
+            IsMainThread = mainThread;
             this.commandGetter = commandGetter;
         }
 
