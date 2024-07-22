@@ -11,6 +11,7 @@ namespace Unibrics.Core
     using Execution;
     using Features;
     using Launchers;
+    using Logs;
     using Services;
     using Unibrics.Utils.Json;
     using Utils;
@@ -29,6 +30,7 @@ namespace Unibrics.Core
             services.Add<IVersionProvider>().ImplementedBy<AppVersionProvider>().AsSingleton();
             services.Add<IDeviceIdProvider>().ImplementedBy<DeviceIdProvider>().AsSingleton();
             services.Add<IDeviceFingerprintProvider>().ImplementedBy<DeviceFingerprintProvider>().AsSingleton();
+            services.Add<ILogAccessProvider>().ImplementedBy<LogAccessProvider>().AsSingleton();
             
             services.Add<IJsonSerializer>().ImplementedBy<JsonDotNetSerializer>().AsSingleton();
             

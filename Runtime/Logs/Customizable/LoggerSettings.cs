@@ -2,6 +2,7 @@ namespace Unibrics.Logs
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using UnityEngine;
 
     [CreateAssetMenu(menuName = "Unibrics/Logger/Settings", fileName = "LoggerSettings")]
@@ -9,6 +10,8 @@ namespace Unibrics.Logs
     {
         [SerializeField]
         private List<LoggerEntry> entries;
+        
+        public IEnumerable<string> GetAllCategories => entries.Select(category => category.Category);
 
         private readonly LoggerEntry Disabled = new LoggerEntry() { Enabled = false, EntryColor = Color.white };
 
