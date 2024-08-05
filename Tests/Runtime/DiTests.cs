@@ -146,5 +146,19 @@ namespace Unibrics.Core.Tests
                 services.Rebind<IFirstInterface, IFourthInterface>().ImplementedBy<SecondImplementation>().AsSingleton();
             });
         }
+
+        [Test]
+        public void _12Unbind()
+        {
+            services.Add<IFirstInterface, ISecondInterface>().ImplementedBy<FirstImplementation>().AsSingleton();
+
+            Assert.That(FirstDescriptor.InterfaceTypes.Length, Is.EqualTo(2));
+            
+            services.Unbind<ISecondInterface>();
+            Assert.That(FirstDescriptor.InterfaceTypes.Length, Is.EqualTo(1));
+            
+            services.Unbind<IFirstInterface>();
+            Assert.That(services.Descriptors.Count, Is.EqualTo(0));
+        }
     }
 }
