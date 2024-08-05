@@ -10,11 +10,21 @@ namespace Unibrics.Core.Tests
         
     }
 
-    class FirstImplementation : IFirstInterface, ISecondInterface
+    interface IThirdInterface
+    {
+        
+    }
+
+    interface IFourthInterface
+    {
+        
+    }
+    
+    class FirstImplementation : IFirstInterface, ISecondInterface, IThirdInterface, IFourthInterface
     {
     }
 
-    class SecondImplementation : IFirstInterface, ISecondInterface
+    class SecondImplementation : IFirstInterface, ISecondInterface, IThirdInterface, IFourthInterface
     {
         
     }

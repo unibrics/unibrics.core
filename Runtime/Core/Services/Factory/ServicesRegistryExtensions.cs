@@ -52,5 +52,39 @@ namespace Unibrics.Core.Services
             registry.Add(binding.Descriptor);
             return binding;
         }
+
+        public static IFromBinding Rebind<TFrom1, TFrom2>(this IServicesRegistry registry)
+        {
+            return Rebind(registry, typeof(TFrom1), typeof(TFrom2));
+        }
+        
+        public static IFromBinding Rebind<TFrom1, TFrom2, TFrom3>(this IServicesRegistry registry)
+        {
+            return Rebind(registry, typeof(TFrom1), typeof(TFrom2), typeof(TFrom3));
+        }
+        
+        public static IFromBinding Rebind(this IServicesRegistry registry, params Type[] types)
+        {
+            var oldBinding = registry.Get(desc => types.All(type => desc.InterfaceTypes.Contains(type)));
+            if (oldBinding == null)
+            {
+                throw new ServiceValidationException($"Could not find a binding that binds all {string.Join<Type>(",", types)}," +
+                    $" may be they were bound to different implementations");
+            }
+
+            foreach (var type in types)
+            {
+                oldBinding.RemoveInterfaceType(type);
+            }
+            
+            if (oldBinding.InterfaceTypes.Length == 0)
+            {
+                registry.Drop(oldBinding);
+            }
+            
+            var binding = new ServiceDescriptorBuilder(types);
+            registry.Add(binding.Descriptor);
+            return binding;
+        }
     }
 }

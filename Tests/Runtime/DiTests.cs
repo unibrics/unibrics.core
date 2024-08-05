@@ -12,6 +12,7 @@ namespace Unibrics.Core.Tests
         private StubDiService services;
 
         private ServiceDescriptor FirstDescriptor => services.Descriptors.First();
+        private ServiceDescriptor SecondDescriptor => services.Descriptors[1];
 
         [SetUp]
         public void SetUp()
@@ -116,6 +117,33 @@ namespace Unibrics.Core.Tests
             Assert.Throws<ServiceValidationException>(() =>
             {
                 services.Rebind<IFirstInterface>().ImplementedBy<SecondImplementation>().AsSingleton();
+            });
+        }
+
+        [Test]
+        public void _10MultipleRebinds_ShouldRebind()
+        {
+            services.Add<IFirstInterface, ISecondInterface, IThirdInterface>()
+                .ImplementedBy<FirstImplementation>().AsSingleton();
+            
+            services.Rebind<IFirstInterface, ISecondInterface>().ImplementedBy<SecondImplementation>().AsSingleton();
+            
+            Assert.That(FirstDescriptor.InterfaceTypes.Length, Is.EqualTo(1));
+            Assert.That(FirstDescriptor.ImplementationType, Is.EqualTo(typeof(FirstImplementation)));
+            
+            Assert.That(SecondDescriptor.InterfaceTypes.Length, Is.EqualTo(2));
+            Assert.That(SecondDescriptor.ImplementationType, Is.EqualTo(typeof(SecondImplementation)));
+        }
+
+        [Test]
+        public void _11MultipleRebinds_WithWrongSet_ShouldThrow()
+        {
+            services.Add<IFirstInterface, ISecondInterface, IThirdInterface>()
+                .ImplementedBy<FirstImplementation>().AsSingleton();
+            
+            Assert.Throws<ServiceValidationException>(() =>
+            {
+                services.Rebind<IFirstInterface, IFourthInterface>().ImplementedBy<SecondImplementation>().AsSingleton();
             });
         }
     }
