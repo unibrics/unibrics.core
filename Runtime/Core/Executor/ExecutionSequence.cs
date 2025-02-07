@@ -63,6 +63,7 @@ namespace Unibrics.Core.Execution
         private void Start(IExecutableCommand next)
         {
             Logger.Log("Execution", $"Starting executing {next}");
+            CommandStarted?.Invoke(next);
             next.Execute(OnComplete);
         }
 
@@ -92,7 +93,6 @@ namespace Unibrics.Core.Execution
             var next = current = queue[0]();
             queue.RemoveAt(0);
             Start(next);
-            CommandStarted?.Invoke(next);
         }
     }
 }
